@@ -9,6 +9,7 @@
 #include "shout_led.h"
 #include "microphone.h"
 #include "ws2812.h"
+#include "door.h"
 #include "spi.h"
 #include "adc.h"
 #include "map.h"
@@ -33,8 +34,6 @@ void ShoutLED_Init(void)
 	  printf("Shout LED initialization \r\n");
 	  shout_led_state = INIT;
 	  last_tick = HAL_GetTick();
-
-
 }
 
 void ShoutLED_Process(void)
@@ -50,13 +49,13 @@ void ShoutLED_Process(void)
 				last_tick = HAL_GetTick();
 				if(i > WS2812_LED_NUMBER)
 				{
-					shout_led_state = IDLE;
+					shout_led_state = LED_IDLE;
 					WS2812_SetAllOff();
 				}
 			}
 		break;
 
-		case IDLE:
+		case LED_IDLE:
 			microphone_value = MICROPHONE_GetMillivolts();
 			if(microphone_value > SHOUT_THRESHOLD)
 			{
@@ -73,13 +72,14 @@ void ShoutLED_Process(void)
 				if(microphone_value > SHOUT_THRESHOLD)
 				{
 					shout_led_state = PROGRESS;
+					mapped_progress = map(progress, ZERO_PERCENT, ONE_HUNDRED_PERCENT, 0, WS2812_LED_NUMBER);
 					ShoutLED_SendToLED();
 					last_tick = HAL_GetTick();
-					printf("IDLE TO PROGRESS STATE \t microphone value = %dmV \r\n", microphone_value);
+					printf("START SHOUTING TO PROGRESS STATE \t microphone value = %dmV \r\n", microphone_value);
 				}
 				if(microphone_value < SHOUT_THRESHOLD && (HAL_GetTick() - last_tick) > INIT_TIME_MAX)
 				{
-					shout_led_state = IDLE;
+					shout_led_state = LED_IDLE;
 				}
 			}
 			break;
@@ -118,7 +118,7 @@ void ShoutLED_Process(void)
 			{
 				if(progress <= 0)
 				{
-					shout_led_state = IDLE;
+					shout_led_state = LED_IDLE;
 					WS2812_SetAllOff();
 					last_tick = HAL_GetTick();
 				}
@@ -150,6 +150,7 @@ void ShoutLED_Process(void)
 				if(blink_counter <= 0)
 				{
 					shout_led_state = FINISH;
+					DOOR_Open();
 					//WS2812_SetAllOff();
 					blink_time = BLINK_TIME_INITIAL;
 					blink_counter = BLINK_COUNTER_INITIAL;
@@ -173,7 +174,8 @@ void ShoutLED_Process(void)
 		case FINISH:
 			if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
 			{
-				shout_led_state = IDLE;
+				shout_led_state = LED_IDLE;
+				//#TODO: door open
 			}
 			break;
 

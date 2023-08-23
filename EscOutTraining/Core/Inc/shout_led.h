@@ -30,7 +30,7 @@
 
 #define RED_FINISH 0x00
 #define GREEN_FINISH 0x01
-#define BLUE_FINISH 0x00
+#define BLUE_FINISH 0x01
 
 #define BLINK_TIME_INITIAL 1000
 #define BLINK_COUNTER_INITIAL 14
@@ -42,7 +42,7 @@
 typedef enum
 {
 	INIT,
-	IDLE,
+	LED_IDLE,
 	START_SHOUTING,
 	PROGRESS,
 	REGRESS,
