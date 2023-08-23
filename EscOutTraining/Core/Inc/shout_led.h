@@ -8,10 +8,13 @@
 #ifndef INC_SHOUT_LED_H_
 #define INC_SHOUT_LED_H_
 
-#define INIT_TIME 500
+#define INIT_DELAY 200
 
-#define PROGRESS_TIME 300
-#define REGRESS_TIME 450
+#define INIT_TIME_MIN 500
+#define INIT_TIME_MAX 1000
+
+#define PROGRESS_TIME 100
+#define REGRESS_TIME 150
 
 #define PROGRESS_TO_REGRESS_TIME 1000
 #define REGRESS_TO_PROGRESS_TIME 500
@@ -25,12 +28,25 @@
 #define GREEN 0x00
 #define BLUE 0x00
 
+#define RED_FINISH 0x00
+#define GREEN_FINISH 0x01
+#define BLUE_FINISH 0x00
+
+#define BLINK_TIME_INITIAL 1000
+#define BLINK_COUNTER_INITIAL 14
+
+#define BLINK_TIME_STEP 50
+
+#define NEXT_ROUND_DELAY 5000
+
 typedef enum
 {
+	INIT,
 	IDLE,
 	START_SHOUTING,
 	PROGRESS,
 	REGRESS,
+	FINISH_BLINK,
 	FINISH
 }shout_led_state_t;
 

@@ -11,54 +11,64 @@
 #include "ws2812.h"
 #include "spi.h"
 #include "adc.h"
+#include "map.h"
 #include "putchar.h"
 #include "stdio.h"
+#include "stdbool.h"
 
-static shout_led_state_t shout_led_state = IDLE;
-static uint16_t progress = 0;
+static shout_led_state_t shout_led_state;
 
-static uint32_t last_tick = 0;
+static uint32_t last_tick;
 static uint16_t microphone_value = 0;
 
-//static uint16_t mapped_progress = 0;
-static void ShoutLED_SendToLED(void);
+static uint16_t progress = 0;
+static uint16_t mapped_progress = 0;
 
-/*static uint32_t map(uint16_t x, uint16_t in_min, uint16_t in_max, uint16_t out_min, uint16_t out_max)
-{
-	uint32_t map = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-	return  map;
-}*/
+static void ShoutLED_SendToLED(void);
 
 void ShoutLED_Init(void)
 {
 	  WS2812_Init(&hspi1);
 	  MICROPHONE_Init(&hadc1, ADC_CHANNEL_0);
 	  printf("Shout LED initialization \r\n");
-	  //for(uint8_t i = 0; i < WS2812_LED_NUMBER; i++)
-	  //{
-		// WS2812_SetColor(i, RED, GREEN, BLUE);
-		// WS2812_Update();
-		// HAL_Delay(500);
-	 // }
-	  //WS2812_SetAllOff();
+	  shout_led_state = INIT;
+	  last_tick = HAL_GetTick();
+
+
 }
 
 void ShoutLED_Process(void)
 {
 	switch (shout_led_state) {
+		case INIT:
+			if(HAL_GetTick() - last_tick > INIT_DELAY)
+			{
+				static uint16_t i = 0;
+				WS2812_SetLineColors(i, RED, GREEN, BLUE);
+				WS2812_Update();
+				i++;
+				last_tick = HAL_GetTick();
+				if(i > WS2812_LED_NUMBER)
+				{
+					shout_led_state = IDLE;
+					WS2812_SetAllOff();
+				}
+			}
+		break;
+
 		case IDLE:
 			microphone_value = MICROPHONE_GetMillivolts();
 			if(microphone_value > SHOUT_THRESHOLD)
 			{
 				shout_led_state = START_SHOUTING;
+				progress = 0;
 				last_tick = HAL_GetTick();
 			}
-
 			break;
 
 		case START_SHOUTING:
 			microphone_value = MICROPHONE_GetMillivolts();
-			if(HAL_GetTick() - last_tick > INIT_TIME)
+			if((HAL_GetTick() - last_tick) > INIT_TIME_MIN)
 			{
 				if(microphone_value > SHOUT_THRESHOLD)
 				{
@@ -67,7 +77,7 @@ void ShoutLED_Process(void)
 					last_tick = HAL_GetTick();
 					printf("IDLE TO PROGRESS STATE \t microphone value = %dmV \r\n", microphone_value);
 				}
-				else
+				if(microphone_value < SHOUT_THRESHOLD && (HAL_GetTick() - last_tick) > INIT_TIME_MAX)
 				{
 					shout_led_state = IDLE;
 				}
@@ -78,13 +88,13 @@ void ShoutLED_Process(void)
 			microphone_value = MICROPHONE_GetMillivolts();
 			if((microphone_value > SHOUT_THRESHOLD) && (HAL_GetTick() - last_tick > PROGRESS_TIME))
 			{
-				if(progress >= WS2812_LED_NUMBER/*ONE_HUNDRED_PERCENT*/)
+				if(progress >= ONE_HUNDRED_PERCENT)
 				{
-					shout_led_state = FINISH;
+					shout_led_state = FINISH_BLINK;
 				}
 				else
 				{
-					//mapped_progress = map(progress, ZERO_PERCENT, ONE_HUNDRED_PERCENT, 0, WS2812_LED_NUMBER);
+					mapped_progress = map(progress, ZERO_PERCENT, ONE_HUNDRED_PERCENT, 0, WS2812_LED_NUMBER);
 					ShoutLED_SendToLED();
 					progress++;
 					printf("PROGRESS STATE STILL SHOUTING \t microphone value = %dmV \r\n", microphone_value);
@@ -108,12 +118,14 @@ void ShoutLED_Process(void)
 			{
 				if(progress <= 0)
 				{
-					shout_led_state = FINISH;
+					shout_led_state = IDLE;
+					WS2812_SetAllOff();
+					last_tick = HAL_GetTick();
 				}
 				else
 				{
 					progress--;
-					//mapped_progress = map(progress, ZERO_PERCENT, ONE_HUNDRED_PERCENT, 0, WS2812_LED_NUMBER);
+					mapped_progress = map(progress, ZERO_PERCENT, ONE_HUNDRED_PERCENT, 0, WS2812_LED_NUMBER);
 					ShoutLED_SendToLED();
 					printf("REGRESS STATE NOT SHOUTING \t microphone value = %dmV \r\n", microphone_value);
 				}
@@ -130,11 +142,39 @@ void ShoutLED_Process(void)
 			}
 			break;
 
+		case FINISH_BLINK:;
+			static uint16_t blink_time = BLINK_TIME_INITIAL;
+			static uint16_t blink_counter = BLINK_COUNTER_INITIAL;
+			if(HAL_GetTick() - last_tick > blink_time)
+			{
+				if(blink_counter <= 0)
+				{
+					shout_led_state = FINISH;
+					//WS2812_SetAllOff();
+					blink_time = BLINK_TIME_INITIAL;
+					blink_counter = BLINK_COUNTER_INITIAL;
+					break;
+				}
+				if(blink_counter%2 == 0)
+				{
+					WS2812_SetLineColors(WS2812_LED_NUMBER, RED_FINISH, GREEN_FINISH, BLUE_FINISH);
+					WS2812_Update();
+				}
+				else
+				{
+					WS2812_SetAllOff();
+				}
+				blink_time -= BLINK_TIME_STEP;
+				blink_counter--;
+				last_tick = HAL_GetTick();
+			}
+			break;
+
 		case FINISH:
-			WS2812_SetAllOff();
-			WS2812_Update();
-			progress = 0;
-			shout_led_state = IDLE;
+			if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
+			{
+				shout_led_state = IDLE;
+			}
 			break;
 
 		default:
@@ -144,7 +184,7 @@ void ShoutLED_Process(void)
 
 static void ShoutLED_SendToLED(void)
 {
-	WS2812_SetLineColors(progress, RED, GREEN, BLUE);
+	WS2812_SetLineColors(mapped_progress, RED, GREEN, BLUE);
 	WS2812_Update();
 }
 //#endif /* MY_MACRO */
