@@ -28,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "shout_led.h"
 #include "door.h"
+#include "knocking.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -96,13 +97,25 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   ShoutLED_Init();
+  KNOCKING_Init();
+  for(uint8_t i = 0 ; i < 6; i++)
+  {
+	  HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
+	  HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
+	  HAL_GPIO_TogglePin(YELLOW_LED_GPIO_Port, YELLOW_LED_Pin);
+	  HAL_GPIO_TogglePin(WHITE_LED_GPIO_Port, WHITE_LED_Pin);
+	  HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
+	  HAL_Delay(500);
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  ShoutLED_Process();
+	  //ShoutLED_Process();
+	  KNOCKING_Process();
 	  DOOR_Process();
     /* USER CODE END WHILE */
 

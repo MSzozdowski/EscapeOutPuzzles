@@ -60,12 +60,22 @@ void Error_Handler(void);
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
 #define B1_EXTI_IRQn EXTI15_10_IRQn
+#define SW_RED_Pin GPIO_PIN_0
+#define SW_RED_GPIO_Port GPIOC
+#define SW_GREEN_Pin GPIO_PIN_1
+#define SW_GREEN_GPIO_Port GPIOC
 #define MICROPHONE_Pin GPIO_PIN_0
 #define MICROPHONE_GPIO_Port GPIOA
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
+#define SW_WHITE_Pin GPIO_PIN_4
+#define SW_WHITE_GPIO_Port GPIOA
+#define SW_YELLOW_Pin GPIO_PIN_0
+#define SW_YELLOW_GPIO_Port GPIOB
+#define BUZZER_Pin GPIO_PIN_10
+#define BUZZER_GPIO_Port GPIOB
 #define RELAY_Pin GPIO_PIN_8
 #define RELAY_GPIO_Port GPIOA
 #define YELLOW_LED_Pin GPIO_PIN_10
@@ -74,8 +84,12 @@ void Error_Handler(void);
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
-#define SWO_Pin GPIO_PIN_3
-#define SWO_GPIO_Port GPIOB
+#define WHITE_LED_Pin GPIO_PIN_3
+#define WHITE_LED_GPIO_Port GPIOB
+#define GREEN_LED_Pin GPIO_PIN_4
+#define GREEN_LED_GPIO_Port GPIOB
+#define RED_LED_Pin GPIO_PIN_5
+#define RED_LED_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

@@ -25,6 +25,9 @@ static uint16_t microphone_value = 0;
 static uint16_t progress = 0;
 static uint16_t mapped_progress = 0;
 
+static uint16_t blink_time = BLINK_TIME_INITIAL;
+static uint16_t blink_counter = BLINK_COUNTER_INITIAL;
+
 static void ShoutLED_SendToLED(void);
 
 void ShoutLED_Init(void)
@@ -143,29 +146,28 @@ void ShoutLED_Process(void)
 			break;
 
 		case FINISH_BLINK:;
-			static uint16_t blink_time = BLINK_TIME_INITIAL;
-			static uint16_t blink_counter = BLINK_COUNTER_INITIAL;
+
 			if(HAL_GetTick() - last_tick > blink_time)
 			{
 				if(blink_counter <= 0)
 				{
 					shout_led_state = FINISH;
-					DOOR_Open();
+ 					DOOR_Open();
 					//WS2812_SetAllOff();
 					blink_time = BLINK_TIME_INITIAL;
 					blink_counter = BLINK_COUNTER_INITIAL;
 					break;
 				}
-				if(blink_counter%2 == 0)
+				if(blink_counter%2)
 				{
-					WS2812_SetLineColors(WS2812_LED_NUMBER, RED_FINISH, GREEN_FINISH, BLUE_FINISH);
+					WS2812_SetLineColors(WS2812_LED_NUMBER-1, RED_FINISH, GREEN_FINISH, BLUE_FINISH);
 					WS2812_Update();
+					blink_time -= BLINK_TIME_STEP;
 				}
 				else
 				{
 					WS2812_SetAllOff();
 				}
-				blink_time -= BLINK_TIME_STEP;
 				blink_counter--;
 				last_tick = HAL_GetTick();
 			}
@@ -175,7 +177,7 @@ void ShoutLED_Process(void)
 			if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
 			{
 				shout_led_state = LED_IDLE;
-				//#TODO: door open
+				WS2812_SetAllOff();
 			}
 			break;
 
