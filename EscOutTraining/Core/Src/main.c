@@ -29,6 +29,7 @@
 #include "shout_led.h"
 #include "door.h"
 #include "knocking.h"
+#include "button.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +50,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+button_t button_red;
+button_t button_green;
+button_t button_yellow;
+button_t button_white;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,7 +80,8 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -98,16 +103,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
   ShoutLED_Init();
   KNOCKING_Init();
-  for(uint8_t i = 0 ; i < 6; i++)
-  {
-	  HAL_GPIO_TogglePin(RED_LED_GPIO_Port, RED_LED_Pin);
-	  HAL_GPIO_TogglePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin);
-	  HAL_GPIO_TogglePin(YELLOW_LED_GPIO_Port, YELLOW_LED_Pin);
-	  HAL_GPIO_TogglePin(WHITE_LED_GPIO_Port, WHITE_LED_Pin);
-	  HAL_GPIO_TogglePin(BUZZER_GPIO_Port, BUZZER_Pin);
-	  HAL_Delay(500);
-  }
-
+  BUTTON_Init(&button_red, SW_RED_GPIO_Port, SW_RED_Pin, RED_LED_GPIO_Port, RED_LED_Pin);
+  BUTTON_Init(&button_green, SW_GREEN_GPIO_Port, SW_GREEN_Pin, GREEN_LED_GPIO_Port, GREEN_LED_Pin);
+  BUTTON_Init(&button_yellow, SW_YELLOW_GPIO_Port, SW_YELLOW_Pin, YELLOW_LED_GPIO_Port, YELLOW_LED_Pin);
+  BUTTON_Init(&button_white, SW_WHITE_GPIO_Port, SW_WHITE_Pin, WHITE_LED_GPIO_Port, WHITE_LED_Pin);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -115,8 +114,12 @@ int main(void)
   while (1)
   {
 	  //ShoutLED_Process();
-	  KNOCKING_Process();
-	  DOOR_Process();
+	  //KNOCKING_Process();
+	  //DOOR_Process();
+	  BUTTON_Process(&button_red);
+	  BUTTON_Process(&button_green);
+	  BUTTON_Process(&button_yellow);
+	  BUTTON_Process(&button_white);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
