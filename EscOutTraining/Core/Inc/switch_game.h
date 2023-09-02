@@ -9,5 +9,4 @@
 #define INC_SWITCH_GAME_H_
 
 
-
 #endif /* INC_SWITCH_GAME_H_ */
