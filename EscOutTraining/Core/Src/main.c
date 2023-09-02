@@ -30,7 +30,6 @@
 #include "door.h"
 #include "knocking.h"
 #include "button.h"
-#include "stdbool.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,7 +39,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define RAND_ARRAY_SIZE 12
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -111,8 +110,8 @@ int main(void)
   BUTTON_Init(&button_yellow, SW_YELLOW_GPIO_Port, SW_YELLOW_Pin, YELLOW_LED_GPIO_Port, YELLOW_LED_Pin);
   BUTTON_Init(&button_white, SW_WHITE_GPIO_Port, SW_WHITE_Pin, WHITE_LED_GPIO_Port, WHITE_LED_Pin);
 
-  //uint8_t const rand_array[12] = {0, 1, 2, 3, 0, 1, 2, 3 , 0, 1, 2, 3};
-  uint8_t const rand_array[12] = {0, 3, 0, 1, 3, 2, 0, 2, 3, 2, 1, 0};
+  uint8_t const rand_array[RAND_ARRAY_SIZE] = {0, 1, 2, 3, 0, 1, 2, 3 , 0, 1, 2, 3};
+  //uint8_t const rand_array[RAND_ARRAY_SIZE] = {0, 3, 0, 1, 3, 2, 0, 2, 3, 2, 1, 0};
   uint8_t rand_index = 0;
   /* USER CODE END 2 */
 
@@ -129,30 +128,23 @@ int main(void)
 	  BUTTON_Process(&button_white);
 
 	  if(button_red.button_led_state == BUTTON_LED_IDLE
-			  && button_green.button_led_state == BUTTON_LED_IDLE
-			  && button_yellow.button_led_state == BUTTON_LED_IDLE
-			  && button_white.button_led_state == BUTTON_LED_IDLE)
+		&& button_green.button_led_state == BUTTON_LED_IDLE
+		&& button_yellow.button_led_state == BUTTON_LED_IDLE
+		&& button_white.button_led_state == BUTTON_LED_IDLE)
 	  {
+		  if(rand_array[rand_index] == 0)
+			  BUTTON_LED_SetState(&button_red, BUTTON_LED_BLINK);
+		  else if(rand_array[rand_index] == 1)
+			  BUTTON_LED_SetState(&button_green, BUTTON_LED_BLINK);
+		  else if(rand_array[rand_index] == 2)
+			  BUTTON_LED_SetState(&button_yellow, BUTTON_LED_BLINK);
+		  else if(rand_array[rand_index] == 3)
+			  BUTTON_LED_SetState(&button_white, BUTTON_LED_BLINK);
 		  rand_index++;
-		  rand_index=rand_index%12;
+		  rand_index=rand_index%RAND_ARRAY_SIZE;
 	  }
 
-	  if(rand_array[rand_index] == 0 && button_red.button_led_state == BUTTON_LED_IDLE)
-	  {
-		  BUTTON_LED_SetState(&button_red, BUTTON_LED_BLINK);
-	  }
-	  else if(rand_array[rand_index] == 1 && button_green.button_led_state == BUTTON_LED_IDLE)
-	  {
-		  BUTTON_LED_SetState(&button_green, BUTTON_LED_BLINK);
-	  }
-	  else if(rand_array[rand_index] == 2 && button_yellow.button_led_state == BUTTON_LED_IDLE)
-	  {
-		  BUTTON_LED_SetState(&button_yellow, BUTTON_LED_BLINK);
-	  }
-	  else if(rand_array[rand_index] == 3 && button_white.button_led_state == BUTTON_LED_IDLE)
-	  {
-		  BUTTON_LED_SetState(&button_white, BUTTON_LED_BLINK);
-	  }
+
 
 
     /* USER CODE END WHILE */
