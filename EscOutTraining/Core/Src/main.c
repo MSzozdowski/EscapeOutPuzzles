@@ -30,6 +30,7 @@
 #include "door.h"
 #include "knocking.h"
 #include "button.h"
+#include "buzzer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -113,6 +114,16 @@ int main(void)
   uint8_t const rand_array[RAND_ARRAY_SIZE] = {0, 1, 2, 3, 0, 1, 2, 3 , 0, 1, 2, 3};
   //uint8_t const rand_array[RAND_ARRAY_SIZE] = {0, 3, 0, 1, 3, 2, 0, 2, 3, 2, 1, 0};
   uint8_t rand_index = 0;
+  BUZZER_Go(TBUZ_500, TICK_1);
+  HAL_Delay(500);
+  BUZZER_Go(TBUZ_500, TICK_2);
+  HAL_Delay(500);
+  BUZZER_Go(TBUZ_500, TICK_4);
+  HAL_Delay(500);
+  BUZZER_Go(TBUZ_500, TICK_6);
+  HAL_Delay(500);
+  BUZZER_Go(TBUZ_100, TICK_8);
+  HAL_Delay(500);
   /* USER CODE END 2 */
 
   /* Infinite loop */
