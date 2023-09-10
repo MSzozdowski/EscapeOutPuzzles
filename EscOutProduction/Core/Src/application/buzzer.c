@@ -1,6 +1,6 @@
 #include "main.h"
-#include "buzzer.h"
 #include "tim.h"
+#include "application/buzzer.h"
 
 typedef struct BuzzerDebug
 {

@@ -4,16 +4,20 @@
  *  Created on: Aug 20, 2023
  *      Author: stasz
  */
-//#ifdef MY_MACRO
+
 #include "main.h"
-#include "shout_led.h"
-#include "microphone.h"
-#include "ws2812.h"
-#include "door.h"
 #include "spi.h"
 #include "adc.h"
-#include "map.h"
+
 #include "stdbool.h"
+
+#include "application/shout_led.h"
+#include "application/microphone.h"
+#include "application/ws2812.h"
+#include "application/door.h"
+#include "application/map.h"
+
+static void ShoutLED_SendToLED(void);
 
 static shout_led_state_t shout_led_state;
 
@@ -25,10 +29,6 @@ static uint16_t mapped_progress = 0;
 
 static uint16_t blink_time = BLINK_TIME_INITIAL;
 static uint16_t blink_counter = BLINK_COUNTER_INITIAL;
-
-
-
-static void ShoutLED_SendToLED(void);
 
 void ShoutLED_Init(void)
 {
@@ -179,9 +179,6 @@ void ShoutLED_Process(void)
 				WS2812_SetAllOff();
 			}
 			break;
-
-		default:
-			break;
 	}
 }
 
@@ -190,4 +187,3 @@ static void ShoutLED_SendToLED(void)
 	WS2812_SetLineColors(mapped_progress, RED, GREEN, BLUE);
 	WS2812_Update();
 }
-//#endif /* MY_MACRO */

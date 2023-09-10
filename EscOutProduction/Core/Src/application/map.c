@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "map.h"
+#include "application/map.h"
 
 uint16_t map(uint16_t input, uint16_t input_min, uint16_t input_max, uint16_t output_min, uint16_t output_max)
 {

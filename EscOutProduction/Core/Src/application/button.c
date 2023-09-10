@@ -6,9 +6,9 @@
  */
 
 #include "main.h"
-#include "button.h"
 #include "gpio.h"
-#include "buzzer.h"
+#include "application/button.h"
+#include "application/buzzer.h"
 
 static GPIO_PinState BUTTON_GetSWState(button_t* button);
 

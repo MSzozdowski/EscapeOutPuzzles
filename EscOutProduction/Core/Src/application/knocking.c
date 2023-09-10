@@ -6,17 +6,16 @@
  */
 
 #include "main.h"
-#include "knocking.h"
-#include "piezo.h"
 #include "adc.h"
-#include "door.h"
+#include "application/knocking.h"
+#include "application/piezo.h"
+#include "application/door.h"
 
 static knocking_state_t knocking_state;
 static uint16_t piezo_value = 0;
 static uint8_t knock_counter = 1;
 static uint32_t last_tick;
 static uint32_t start_tick_time;
-
 
 void KNOCKING_Init(void)
 {

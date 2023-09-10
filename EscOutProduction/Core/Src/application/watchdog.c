@@ -6,8 +6,8 @@
  */
 
 #include "main.h"
-#include "watchdog.h"
 #include "iwdg.h"
+#include "application/watchdog.h"
 
 void WATCHDOG_Refresh(void)
 {

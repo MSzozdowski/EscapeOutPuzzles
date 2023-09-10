@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "door.h"
+#include "application/door.h"
 #include "stdbool.h"
 
 static void RELAY_On(void);

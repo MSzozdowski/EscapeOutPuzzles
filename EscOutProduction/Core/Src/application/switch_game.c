@@ -6,10 +6,11 @@
  */
 
 #include "main.h"
-#include "switch_game.h"
-#include "button.h"
-#include "buzzer.h"
-#include "door.h"
+#include "application/switch_game.h"
+#include "application/button.h"
+#include "application/buzzer.h"
+#include "application/door.h"
+
 //Callbacks
 static void AddToCounter(void);
 static void ResetCounter(void);
@@ -24,7 +25,7 @@ static switch_game_state_t switch_game_state = SWITCH_GAME_INIT;
 static volatile uint8_t positive_press_counter = 0;
 
 //uint8_t const rand_array[RAND_ARRAY_SIZE] = {0, 1, 2, 3, 0, 1, 2, 3 , 0, 1, 2, 3};
-uint8_t const rand_array[RAND_ARRAY_SIZE] = {0, 3, 0, 1, 3, 2, 0, 2, 3, 2, 1, 0};
+const uint8_t rand_array[RAND_ARRAY_SIZE] = {0, 3, 0, 1, 3, 2, 0, 2, 3, 2, 1, 0};
 static uint8_t rand_index = 0;
 static uint32_t last_tick = 0;
 

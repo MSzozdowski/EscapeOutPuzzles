@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "board_id.h"
+#include "application/board_id.h"
 
 static ADC_HandleTypeDef* board_id_adc;
 static uint32_t board_id_channel;

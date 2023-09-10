@@ -4,15 +4,15 @@
  *  Created on: Aug 14, 2023
  *      Author: szozdowskim
  */
-//#ifdef MY_MACRO
 #include "main.h"
-#include "ws2812.h"
 #include "spi.h"
 #include "dma.h"
 #include "gpio.h"
 
-#include <stdio.h>
-#include <string.h>
+#include "application/ws2812.h"
+
+#include "stdio.h"
+#include "string.h"
 
 SPI_HandleTypeDef *ws2812_spi;
 
@@ -86,9 +86,3 @@ static void WS2812_ClearDataBuffer(void)
 {
 	memset(buffer, ZERO, WS2812_LED_NUMBER * WS2812_BYTES_PER_LED);
 }
-
-/*void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
-{
-	HAL_GPIO_TogglePin(YELLOW_LED_GPIO_Port, YELLOW_LED_Pin);
-}*/
-//#endif /*MY MACRO*/

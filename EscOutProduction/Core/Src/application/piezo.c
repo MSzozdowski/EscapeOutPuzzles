@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "piezo.h"
+#include "application/piezo.h"
 
 static ADC_HandleTypeDef* piezo_adc;
 static uint32_t piezo_channel;

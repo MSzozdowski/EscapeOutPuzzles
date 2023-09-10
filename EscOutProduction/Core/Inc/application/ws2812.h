@@ -5,8 +5,6 @@
  *      Author: szozdowskim
  */
 
-//#ifdef MY_MACRO
-
 #ifndef INC_WS2812_H_
 #define INC_WS2812_H_
 
@@ -26,4 +24,3 @@ void WS2812_Update(void);
 void WS2812_SetAllOff(void);
 
 #endif /* INC_WS2812_H_ */
-//#endif /*MY MACRO*/

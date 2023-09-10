@@ -4,7 +4,6 @@
  *  Created on: Aug 20, 2023
  *      Author: stasz
  */
-//#ifdef MY_MACRO
 #ifndef INC_SHOUT_LED_H_
 #define INC_SHOUT_LED_H_
 
@@ -54,4 +53,3 @@ void ShoutLED_Init(void);
 void ShoutLED_Process(void);
 
 #endif /* INC_SHOUT_LED_H_ */
-//#endif /* MY_MACRO */

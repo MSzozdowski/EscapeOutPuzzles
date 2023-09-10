@@ -27,13 +27,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "knocking.h"
-#include "shout_led.h"
-#include "door.h"
-#include "switch_game.h"
-#include "board_id.h"
-#include "buzzer.h"
-#include "watchdog.h"
+#include "application/knocking.h"
+#include "application/shout_led.h"
+#include "application/door.h"
+#include "application/switch_game.h"
+#include "application/board_id.h"
+#include "application/buzzer.h"
+#include "application/watchdog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -147,6 +147,7 @@ int main(void)
 		case BOARD_IS_SWITCH_GAME:
 			SWITCH_GAME_Process();
 			break;
+
 		case BOARD_NOT_DEFINED:
 			if(HAL_GetTick() - error_tick > ERROR_BLINK_DELAY)
 			{

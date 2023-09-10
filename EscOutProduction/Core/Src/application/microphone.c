@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "microphone.h"
+#include "application/microphone.h"
 
 static ADC_HandleTypeDef* micro_adc;
 static uint32_t microphone_channel;
