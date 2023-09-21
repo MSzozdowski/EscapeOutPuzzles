@@ -153,6 +153,7 @@ void ShoutLED_Process(void)
 					shout_led_state = FINISH;
  					DOOR_Open();
 					//WS2812_SetAllOff();
+ 					last_tick = HAL_GetTick();
 					blink_time = BLINK_TIME_INITIAL;
 					blink_counter = BLINK_COUNTER_INITIAL;
 					break;
@@ -173,11 +174,16 @@ void ShoutLED_Process(void)
 			break;
 
 		case FINISH:
-			if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
+			//if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
+			if(HAL_GetTick() - last_tick > CHECK_DOOR_STATUS_DELAY)
 			{
-				shout_led_state = LED_IDLE;
-				WS2812_SetAllOff();
+				if(DOOR_IsOpen() == false)
+				{
+					shout_led_state = LED_IDLE;
+					WS2812_SetAllOff();
+				}
 			}
+
 			break;
 	}
 }

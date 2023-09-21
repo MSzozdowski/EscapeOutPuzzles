@@ -34,6 +34,7 @@
 #include "application/board_id.h"
 #include "application/buzzer.h"
 #include "application/watchdog.h"
+#include "application/reset.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -128,6 +129,10 @@ int main(void)
 	  board_id = BOARD_NOT_DEFINED;
 	  DEBUG_LED_Blink(4);
   }
+
+  if(reset_cause_get() == RESET_CAUSE_EXTERNAL_RESET_PIN_RESET)
+	  DOOR_Open();
+
   uint32_t error_tick = 0;
   /* USER CODE END 2 */
 

@@ -70,11 +70,14 @@ void KNOCKING_Process(void)
 			break;
 
 		case FINISH_KNOCKING:
-			if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
+			//if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
+			if(HAL_GetTick() - last_tick > CHECK_DOOR_STATUS_DELAY)
 			{
-
-				knocking_state = KNOCKING_IDLE;
-				knock_counter = 1;
+				if(DOOR_IsOpen() == false)
+				{
+					knocking_state = KNOCKING_IDLE;
+					knock_counter = 1;
+				}
 			}
 			break;
 	}
