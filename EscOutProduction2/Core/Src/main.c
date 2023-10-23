@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -27,6 +28,9 @@
 #include "application/door.h"
 #include "application/button_game.h"
 #include "application/metal_ball.h"
+#include "application/reed_switch_player.h"
+#include "application/board_id.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +50,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+board_id_t board_id = BOARD_NOT_DEFINED;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,9 +95,13 @@ int main(void)
   MX_TIM17_Init();
   MX_USART2_UART_Init();
   MX_TIM1_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+  BOARD_ID_Init(&hadc1, ADC_CHANNEL_1);
+  board_id = BOARD_ID_GetBoardID();
   //BUTTON_GAME_Init();
-  METAL_BALL_Init();
+  //METAL_BALL_Init();
+  REED_SW_PLAYER_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -101,7 +109,8 @@ int main(void)
   while (1)
   {
 	  DOOR_Process();
-	  METAL_BALL_Process();
+	  REED_SW_PLAYER_Process();
+	  //METAL_BALL_Process();
 	  //BUTTON_GAME_Process();
     /* USER CODE END WHILE */
 

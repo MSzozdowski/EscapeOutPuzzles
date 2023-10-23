@@ -59,12 +59,16 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define BUZZER_Pin GPIO_PIN_9
 #define BUZZER_GPIO_Port GPIOB
+#define ID_RES_Pin GPIO_PIN_1
+#define ID_RES_GPIO_Port GPIOA
 #define DFR_TX_Pin GPIO_PIN_2
 #define DFR_TX_GPIO_Port GPIOA
 #define DFR_RX_Pin GPIO_PIN_3
 #define DFR_RX_GPIO_Port GPIOA
 #define DBG_LED_Pin GPIO_PIN_1
 #define DBG_LED_GPIO_Port GPIOB
+#define DFP_BUSY_Pin GPIO_PIN_2
+#define DFP_BUSY_GPIO_Port GPIOB
 #define RELAY_Pin GPIO_PIN_9
 #define RELAY_GPIO_Port GPIOA
 #define CAP_SENS_NC_Pin GPIO_PIN_6
@@ -75,6 +79,16 @@ void Error_Handler(void);
 #define BUTTON_LED_GPIO_Port GPIOA
 #define BTN_LED_LIGHT_Pin GPIO_PIN_12
 #define BTN_LED_LIGHT_GPIO_Port GPIOA
+#define REED_SW5_Pin GPIO_PIN_15
+#define REED_SW5_GPIO_Port GPIOA
+#define REED_SW4_Pin GPIO_PIN_3
+#define REED_SW4_GPIO_Port GPIOB
+#define REED_SW3_Pin GPIO_PIN_4
+#define REED_SW3_GPIO_Port GPIOB
+#define REED_SW2_Pin GPIO_PIN_5
+#define REED_SW2_GPIO_Port GPIOB
+#define REED_SW1_Pin GPIO_PIN_8
+#define REED_SW1_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
