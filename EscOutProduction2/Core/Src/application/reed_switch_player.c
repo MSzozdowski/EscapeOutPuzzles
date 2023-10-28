@@ -12,6 +12,7 @@
 #include "application/door.h"
 #include "usart.h"
 #include "string.h"
+#include "stdbool.h"
 
 static void ReedSwCallback(reed_sw* reed_sw);
 
@@ -20,6 +21,10 @@ static reed_sw reed_sw2;
 static reed_sw reed_sw3;
 static reed_sw reed_sw4;
 static reed_sw reed_sw5;
+
+static bool puzzle_solved_flag;
+static reed_switch_player_state_t reed_switch_player_state;
+static uint32_t reed_switch_player_tick;
 
 void REED_SW_PLAYER_Init(void)
 {
@@ -32,6 +37,8 @@ void REED_SW_PLAYER_Init(void)
 	DFPLAYER_Init(&huart2);
 
 	ReedSwitchCallBack(ReedSwCallback);
+	puzzle_solved_flag = false;
+	reed_switch_player_state = REED_SWITCH_PLAYER_WAIT;
 }
 
 void REED_SW_PLAYER_Process(void)
@@ -41,6 +48,33 @@ void REED_SW_PLAYER_Process(void)
 	REED_SW_Process(&reed_sw3);
 	REED_SW_Process(&reed_sw4);
 	REED_SW_Process(&reed_sw5);
+
+	switch (reed_switch_player_state)
+	{
+		case REED_SWITCH_PLAYER_WAIT:
+			if(puzzle_solved_flag == true)
+			{
+				reed_switch_player_tick = HAL_GetTick();
+				reed_switch_player_state = REED_SWITCH_PLAYER_SOLVED;
+			}
+			break;
+		case REED_SWITCH_PLAYER_SOLVED:
+			if(HAL_GetTick() - reed_switch_player_tick > LAST_MUSIC_DELAY)
+			{
+				DFPLAYER_Play(6); //last song when before open doors
+				reed_switch_player_tick = HAL_GetTick();
+				reed_switch_player_state = REED_SWITCH_PLAYER_OPEN_DOOR;
+			}
+			break;
+		case REED_SWITCH_PLAYER_OPEN_DOOR:
+			if(HAL_GetTick() - reed_switch_player_tick > DOOR_OPEN_DELAY)
+			{
+				puzzle_solved_flag = false;
+				DOOR_Open();
+				reed_switch_player_state = REED_SWITCH_PLAYER_WAIT;
+			}
+			break;
+	}
 }
 
 static void ReedSwCallback(reed_sw* reed_sw)
@@ -49,7 +83,6 @@ static void ReedSwCallback(reed_sw* reed_sw)
 
 	if(reed_sw == &reed_sw1)
 	{
-
 		DFPLAYER_Play(reed_sw->reed_sw_id);
 		number = 1;
 	}
@@ -84,7 +117,11 @@ static void ReedSwCallback(reed_sw* reed_sw)
 			(reed_sw->reed_sw_id == 4) ? number++ : (number = 1);
 			break;
 		case 5:
-			(reed_sw->reed_sw_id == 5) ? DOOR_Open() : (number = 1);
+			if(reed_sw->reed_sw_id == 5)
+			{
+				if(puzzle_solved_flag == false)
+					puzzle_solved_flag = true;
+			}
 			number = 1;
 			break;
 	}

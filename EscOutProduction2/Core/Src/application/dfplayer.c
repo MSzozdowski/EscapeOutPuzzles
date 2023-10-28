@@ -9,6 +9,9 @@
 #include "application/dfplayer.h"
 
 UART_HandleTypeDef *dfp_uart;
+//dfplayer_state_t dfplayer_state;
+
+//uint8_t dfplayer_buffer[MAX_COM_PARAM_QUE][3] = {0};
 
 static void DFPLAYER_Busy(busy_state_t busy_state)
 {
@@ -33,7 +36,7 @@ void DFPLAYER_Init(UART_HandleTypeDef* uart)
 	dfp_uart = uart;
 	DFPLAYER_Busy(DFP_ON);
 
-	//DFPLAYER_SendCommand(QRY_CUR_STAT, 0x00, 0x00);
+//	DFPLAYER_SendCommand(QRY_CUR_STAT, 0x00, 0x00);
 
 	DFPLAYER_SendCommand(RST_MOD, 0x00, 0x00);
 	HAL_Delay(1500);

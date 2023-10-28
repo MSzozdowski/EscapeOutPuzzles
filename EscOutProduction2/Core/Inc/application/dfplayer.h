@@ -30,6 +30,8 @@
 //DFP SOURCE
 #define SD_CARD 0x02
 
+#define MAX_COM_PARAM_QUE
+
 typedef enum
 {
 	DFP_ON,

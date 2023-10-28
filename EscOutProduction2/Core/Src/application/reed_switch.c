@@ -53,7 +53,7 @@ void REED_SW_Process(reed_sw* reed_sw)
 			break;
 
 		case REED_SW_WAIT:
-			if(REED_SW_GetState(reed_sw) == GPIO_PIN_SET && HAL_GetTick()-reed_sw->reed_sw_tick > REED_SW_WAIT_TIME)
+			if(REED_SW_GetState(reed_sw) == GPIO_PIN_SET && HAL_GetTick() - reed_sw->reed_sw_tick > REED_SW_WAIT_TIME)
 			{
 				reed_sw->reed_sw_state = REED_SW_IDLE;
 			}

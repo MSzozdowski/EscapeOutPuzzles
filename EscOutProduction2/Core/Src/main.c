@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "iwdg.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -30,7 +31,7 @@
 #include "application/metal_ball.h"
 #include "application/reed_switch_player.h"
 #include "application/board_id.h"
-
+#include "application/watchdog.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,7 +57,7 @@ board_id_t board_id = BOARD_NOT_DEFINED;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void DEBUG_LED_Blink(uint8_t blink_times);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -96,12 +97,31 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM1_Init();
   MX_ADC1_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
   BOARD_ID_Init(&hadc1, ADC_CHANNEL_1);
   board_id = BOARD_ID_GetBoardID();
-  //BUTTON_GAME_Init();
-  //METAL_BALL_Init();
-  REED_SW_PLAYER_Init();
+  if(board_id == BOARD_IS_REED_SWITCH)
+  {
+	  DEBUG_LED_Blink(1);
+	  REED_SW_PLAYER_Init();
+  }
+  else if(board_id == BOARD_IS_BUTTON_GAME)
+  {
+	  DEBUG_LED_Blink(2);
+	  BUTTON_GAME_Init();
+  }
+  else if(board_id == BOARD_IS_METAL_BALL)
+  {
+	  DEBUG_LED_Blink(3);
+	  METAL_BALL_Init();
+  }
+  else
+  {
+	  DEBUG_LED_Blink(4);
+	  Error_Handler();
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -109,9 +129,13 @@ int main(void)
   while (1)
   {
 	  DOOR_Process();
-	  REED_SW_PLAYER_Process();
-	  //METAL_BALL_Process();
-	  //BUTTON_GAME_Process();
+	  if(board_id == BOARD_IS_REED_SWITCH)
+		  REED_SW_PLAYER_Process();
+	  else if(board_id == BOARD_IS_BUTTON_GAME)
+		  BUTTON_GAME_Process();
+	  else if(board_id == BOARD_IS_METAL_BALL)
+		  METAL_BALL_Process();
+	  WATCHDOG_Refresh();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -135,10 +159,11 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV1;
@@ -165,7 +190,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void DEBUG_LED_Blink(uint8_t blink_times)
+{
+	for(uint8_t i=0; i<blink_times*2; i++)
+	{
+		HAL_GPIO_TogglePin(DBG_LED_GPIO_Port, DBG_LED_Pin);
+		HAL_Delay(250);
+		WATCHDOG_Refresh();
+	}
+}
 /* USER CODE END 4 */
 
 /**
@@ -179,6 +212,7 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	  HAL_GPIO_TogglePin(DBG_LED_GPIO_Port, DBG_LED_Pin);
   }
   /* USER CODE END Error_Handler_Debug */
 }
