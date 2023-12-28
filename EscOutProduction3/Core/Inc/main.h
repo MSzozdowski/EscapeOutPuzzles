@@ -61,6 +61,14 @@ void Error_Handler(void);
 #define REED_SW1_GPIO_Port GPIOC
 #define DEBUG_LED_Pin GPIO_PIN_1
 #define DEBUG_LED_GPIO_Port GPIOB
+#define DFR_BUSY_Pin GPIO_PIN_2
+#define DFR_BUSY_GPIO_Port GPIOB
+#define RELAY2_Pin GPIO_PIN_9
+#define RELAY2_GPIO_Port GPIOA
+#define CAP_SENS_NO_Pin GPIO_PIN_10
+#define CAP_SENS_NO_GPIO_Port GPIOA
+#define LIGHT_Pin GPIO_PIN_12
+#define LIGHT_GPIO_Port GPIOA
 #define RELAY_Pin GPIO_PIN_15
 #define RELAY_GPIO_Port GPIOA
 #define REED_SW4_Pin GPIO_PIN_4
