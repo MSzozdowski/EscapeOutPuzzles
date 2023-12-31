@@ -18,7 +18,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "dma.h"
+#include "iwdg.h"
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
@@ -27,6 +29,11 @@
 /* USER CODE BEGIN Includes */
 #include "app/reed_sw_colors.h"
 #include "app/cap_sense_player.h"
+#include "app/door.h"
+#include "app/board_id.h"
+#include "app/reset.h"
+#include "app/watchdog.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,13 +53,13 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+board_id_t board_id = BOARD_NOT_DEFINED;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void DEBUG_LED_Blink(uint8_t blink_times);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -91,9 +98,29 @@ int main(void)
   MX_DMA_Init();
   MX_SPI1_Init();
   MX_USART2_UART_Init();
+  MX_ADC1_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
-  //REED_SW_COLORS_Init();
-  CAP_SENSE_PLAYER_Init();
+  BOARD_ID_Init(&hadc1, ADC_CHANNEL_1);
+  board_id = BOARD_ID_GetBoardID();
+  if(board_id == BOARD_IS_REED_SWITCH_COLORS)
+  {
+	  DEBUG_LED_Blink(1);
+	  REED_SW_COLORS_Init();
+  }
+  else if(board_id == BOARD_IS_CAP_SENSE_PLAYER)
+  {
+	  DEBUG_LED_Blink(2);
+	  CAP_SENSE_PLAYER_Init();
+  }
+  else
+  {
+	  DEBUG_LED_Blink(4);
+	  Error_Handler();
+  }
+
+  if(reset_cause_get() == RESET_CAUSE_EXTERNAL_RESET_PIN_RESET)
+	  DOOR_Open();
 
   /* USER CODE END 2 */
 
@@ -101,8 +128,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //REED_SW_COLORS_Process();
-	  CAP_SENSE_PLAYER_Process();
+	  DOOR_Process();
+	  if(board_id == BOARD_IS_REED_SWITCH_COLORS)
+		  REED_SW_COLORS_Process();
+	  else if(board_id == BOARD_IS_CAP_SENSE_PLAYER)
+		  CAP_SENSE_PLAYER_Process();
+
+	  WATCHDOG_Refresh();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -126,10 +158,11 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV1;
@@ -156,7 +189,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void DEBUG_LED_Blink(uint8_t blink_times)
+{
+	for(uint8_t i=0; i<blink_times*2; i++)
+	{
+		HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
+		HAL_Delay(250);
+		WATCHDOG_Refresh();
+	}
+}
 /* USER CODE END 4 */
 
 /**

@@ -20,6 +20,7 @@ static cap_sense_player_state_t cap_sense_player_state = CAP_SENSE_PLAYER_INIT;
 
 static volatile bool cap_sense_touched = false;
 
+
 void CAP_SENSE_PLAYER_Init(void)
 {
 	CAP_SENSOR_Init();
@@ -31,7 +32,6 @@ void CAP_SENSE_PLAYER_Init(void)
 void CAP_SENSE_PLAYER_Process(void)
 {
 	CAP_SENSOR_Process();
-	DOOR_Process();
 
 	static uint32_t stage_tick = 0;
 	static uint32_t last_touch_tick = 0;
@@ -92,6 +92,14 @@ void CAP_SENSE_PLAYER_Process(void)
 			if(HAL_GetTick() - stage_tick > DOOR_OPEN_DELAY)
 			{
 				DOOR_Open();
+				cap_sense_player_state = CAP_SENS_WAIT_NEXT_GAME;
+				stage_tick = HAL_GetTick();
+			}
+			break;
+		case CAP_SENS_WAIT_NEXT_GAME:
+			if(HAL_GetTick() - stage_tick > NEXT_GAME_DELAY)
+			{
+				cap_sense_touched = false;
 				cap_sense_player_state = CAP_SENSE_PLAYER_INIT;
 			}
 			break;

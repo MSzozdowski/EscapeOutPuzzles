@@ -12,7 +12,6 @@
 #include "app/led.h"
 #include "app/ws2812.h"
 #include "app/door.h"
-
 #include <stdbool.h>
 
 static void REED_SW_COLORS_InitStage(void);
@@ -99,7 +98,6 @@ void REED_SW_COLORS_Process(void)
 	REED_SW_Process(&reed_sw2);
 	REED_SW_Process(&reed_sw3);
 	REED_SW_Process(&reed_sw4);
-	DOOR_Process();
 
 	switch (reed_sw_colors_state) {
 		case REED_SW_COLORS_INIT:

@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define REED_SW1_Pin GPIO_PIN_14
 #define REED_SW1_GPIO_Port GPIOC
+#define BOARD_ID_Pin GPIO_PIN_1
+#define BOARD_ID_GPIO_Port GPIOA
 #define DEBUG_LED_Pin GPIO_PIN_1
 #define DEBUG_LED_GPIO_Port GPIOB
 #define DFR_BUSY_Pin GPIO_PIN_2
