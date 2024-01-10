@@ -88,6 +88,7 @@ void TOY_PULLING_Process(void)
 static void ButtonPressed(void)
 {
 	DOOR_Open(&toy);
+	DOOR_Open(&door_puzzle);
 	BUTTON_LED_SetState(LED_THREE_BLINKS);
 	button_pressed_flag = true;
 }
