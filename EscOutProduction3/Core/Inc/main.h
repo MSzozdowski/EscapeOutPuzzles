@@ -57,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LOCK_STATE_Pin GPIO_PIN_9
+#define LOCK_STATE_GPIO_Port GPIOB
 #define REED_SW1_Pin GPIO_PIN_14
 #define REED_SW1_GPIO_Port GPIOC
 #define BOARD_ID_Pin GPIO_PIN_1

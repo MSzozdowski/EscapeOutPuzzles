@@ -38,11 +38,27 @@ void CAP_SENSE_PLAYER_Process(void)
 
 	switch (cap_sense_player_state) {
 		case CAP_SENSE_PLAYER_INIT:
-			if(cap_sense_touched)
+			if(DOOR_IsOpen() == false)
+			{
+				if(DFPLAYER_GetState() == DFP_NOT_PLAYING && HAL_GetTick() - stage_tick > DFP_CHECK_TIME)
+				{
+					DFPLAYER_Play(0x01);
+					stage_tick = HAL_GetTick();
+				}
+			}
+			else
+			{
+				if(DFPLAYER_GetState() == DFP_PLAYING && HAL_GetTick() - stage_tick > DFP_CHECK_TIME)
+				{
+					DFPLAYER_Stop();
+					stage_tick = HAL_GetTick();
+				}
+			}
+
+			if(cap_sense_touched && DOOR_IsOpen() == false)
 			{
 				cap_sense_touched = false;
 				cap_sense_player_state = CAP_SENSE_PLAYER_STAGE_1;
-				DFPLAYER_Play(0x01);
 				last_touch_tick = HAL_GetTick();
 				stage_tick = HAL_GetTick();
 			}
@@ -88,6 +104,7 @@ void CAP_SENSE_PLAYER_Process(void)
 				stage_tick = HAL_GetTick();
 			}
 			break;
+
 		case CAP_SENSE_PLAYER_OPEN_DOOR:
 			if(HAL_GetTick() - stage_tick > DOOR_OPEN_DELAY)
 			{
@@ -96,8 +113,9 @@ void CAP_SENSE_PLAYER_Process(void)
 				stage_tick = HAL_GetTick();
 			}
 			break;
+
 		case CAP_SENS_WAIT_NEXT_GAME:
-			if(HAL_GetTick() - stage_tick > NEXT_GAME_DELAY)
+			if(DOOR_IsOpen() == false && HAL_GetTick() - stage_tick > NEXT_GAME_DELAY)
 			{
 				cap_sense_touched = false;
 				cap_sense_player_state = CAP_SENSE_PLAYER_INIT;

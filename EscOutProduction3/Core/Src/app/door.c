@@ -14,57 +14,101 @@ static void RELAY_Off(void);
 
 static door_state_t door_state = DOOR_IDLE;
 static bool request_to_open = false;
+static bool last_open_failed = false;
 static uint32_t last_tick;
 
 void DOOR_Process(void)
 {
+	static uint8_t retry_counter = 0;
 	switch (door_state) {
 		case DOOR_IDLE:
-			if(request_to_open == true)
+			if(request_to_open)
 			{
+				door_state = START_OPENING;
 				RELAY_On();
-				door_state = OPEN;
 				last_tick = HAL_GetTick();
 			}
 			break;
 
-		case OPEN:
+		case START_OPENING:
 			if(HAL_GetTick() - last_tick > DOOR_OPEN_TIME)
 			{
+				door_state = CHECK_OPEN_STATUS;
 				RELAY_Off();
-				door_state = WAIT_FOR_NEXT_OPEN;
 				last_tick = HAL_GetTick();
 			}
 		break;
 
-		case WAIT_FOR_NEXT_OPEN:
-			if(HAL_GetTick() - last_tick > NEXT_DOOR_OPEN_TIME)
+		case CHECK_OPEN_STATUS:
+			if(HAL_GetTick() - last_tick > DOOR_DEBOUNCE_TIME)
 			{
-				request_to_open = false;
+				if(DOOR_IsOpen() == true)
+				{
+					door_state = STOP_OPENING;
+				}
+				else
+				{
+					if(retry_counter++ < 3)
+						door_state = WAIT_FOR_NEXT_OPEN;
+					else
+					{
+						door_state = STOP_OPENING;
+						last_open_failed = true;
+					}
+
+				}
+				last_tick = HAL_GetTick();
+			}
+			break;
+
+		case WAIT_FOR_NEXT_OPEN:
+			if(HAL_GetTick() - last_tick > DOOR_RETRY_DELAY)
+			{
 				door_state = DOOR_IDLE;
 			}
-		break;
+			break;
+
+		case STOP_OPENING:
+			if(HAL_GetTick() - last_tick > DOOR_NEXT_TRY_TIME)
+			{
+				door_state = DOOR_IDLE;
+				retry_counter = 0;
+				request_to_open = false;
+				last_open_failed = false;
+			}
+			break;
+
+		default:
+			break;
 	}
+}
+
+bool DOOR_IsOpen(void)
+{
+	// 1 - doors are opened
+	// 0 - doors are closed
+	if(HAL_GPIO_ReadPin(LOCK_STATE_GPIO_Port, LOCK_STATE_Pin) == GPIO_PIN_SET)
+		return true;
+	else
+		return false;
+}
+
+bool DOOR_IsLastDoorOpenFailed(void)
+{
+	return last_open_failed;
 }
 
 void DOOR_Open(void)
 {
-		request_to_open = true;
-}
-
-door_state_t DOOR_GetState(void)
-{
-	return door_state;
+	request_to_open = true;
 }
 
 static void RELAY_On(void)
 {
-	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(RELAY2_GPIO_Port, RELAY2_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY2_Pin, GPIO_PIN_SET);
 }
 
 static void RELAY_Off(void)
 {
-	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(RELAY2_GPIO_Port, RELAY2_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY2_Pin, GPIO_PIN_RESET);
 }

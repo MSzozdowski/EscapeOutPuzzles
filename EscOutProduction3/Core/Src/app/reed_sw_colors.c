@@ -113,11 +113,11 @@ void REED_SW_COLORS_Process(void)
 			break;
 
 		case REED_SW_COLORS_FINISH:
-			if(DOOR_GetState() == DOOR_IDLE)
-			{
-				solved_flag = false;
-				reed_sw_colors_state = REED_SW_COLORS_INIT;
-			}
+			//if(DOOR_GetState() == DOOR_IDLE)
+			//{
+			//	solved_flag = false;
+			//	reed_sw_colors_state = REED_SW_COLORS_INIT;
+			//}
 			break;
 	}
 }
