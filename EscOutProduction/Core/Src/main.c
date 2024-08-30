@@ -130,8 +130,8 @@ int main(void)
 	  DEBUG_LED_Blink(4);
   }
 
-  if(reset_cause_get() == RESET_CAUSE_EXTERNAL_RESET_PIN_RESET)
-	  DOOR_Open();
+  if(reset_cause_get() != RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET)
+  	  DOOR_Open();
 
   uint32_t error_tick = 0;
   /* USER CODE END 2 */
