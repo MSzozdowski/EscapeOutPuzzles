@@ -1,6 +1,6 @@
 /* vim: set ai et ts=4 sw=4: */
 #include "main.h"
-#include "lcd/st7735.h"
+#include "st7735.h"
 #include "malloc.h"
 #include "string.h"
 

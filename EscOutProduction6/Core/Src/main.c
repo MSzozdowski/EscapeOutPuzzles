@@ -24,10 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
-#include "lcd/st7735.h"
-#include "lcd/fonts.h"
-#include "lcd/testimg.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -37,6 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,6 +46,7 @@
 
 /* USER CODE BEGIN PV */
 
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,6 +57,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
 
 /* USER CODE END 0 */
 
@@ -92,19 +92,14 @@ int main(void)
   MX_SPI1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  ST7735_Init();
-  ST7735_FillScreen(ST7735_BLUE);
-  HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LCD_PWR_LEFT_GPIO_Port, LCD_PWR_LEFT_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(LCD_PWR_RIGHT_GPIO_Port, LCD_PWR_RIGHT_Pin, GPIO_PIN_SET);
+  APP_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
- 	  HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
-	  HAL_Delay(2500);
+	  APP_Main();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
