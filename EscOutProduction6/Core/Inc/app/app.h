@@ -15,11 +15,6 @@
 #include "st7735.h"
 #include "fonts.h"
 
-#define MAIN_LOOP_TIME (50)	//50ms
-#define MCU_SEL_MAX (4)
-
-extern uint8_t g_mcu_id;
-
 void APP_Init(void);
 void APP_Main(void);
 

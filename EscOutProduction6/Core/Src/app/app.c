@@ -6,57 +6,37 @@
  */
 
 #include "app.h"
+#include "app/board_id.h"
+#include "driver/led.h"
+#include "usart.h"
 #include "comms.h"
 
-uint32_t prev_tick;
+board_id_e g_board_id = BOARD_ID_WRONG;
 
-uint8_t g_mcu_id;
-
-typedef struct{
-	GPIO_TypeDef *port;
-	uint16_t pin;
-
-}mcu_sel_t;
-
-mcu_sel_t mcu_selection[4] = {
-		{MCU_SEL1_GPIO_Port,MCU_SEL1_Pin},
-		{MCU_SEL2_GPIO_Port,MCU_SEL2_Pin},
-		{MCU_SEL3_GPIO_Port,MCU_SEL3_Pin},
-		{MCU_SEL4_GPIO_Port,MCU_SEL4_Pin},
-};
-
-static void set_mcu_id();
-
-void set_mcu_id()
+void APP_Init(void)
 {
-	GPIO_PinState pin_state;
-	for(uint8_t i=0; i < MCU_SEL_MAX; i++)
+	g_board_id = BOARD_ID_GetBoardID();
+
+	while(g_board_id == BOARD_ID_WRONG)
 	{
-		pin_state = HAL_GPIO_ReadPin(mcu_selection[i].port, mcu_selection[i].pin);
-		if(GPIO_PIN_RESET == pin_state){
-			g_mcu_id = (i+1);
-		}
-	}
-}
+		g_board_id = BOARD_ID_GetBoardID();
 
-void APP_Init(){
-	set_mcu_id();
-
-	ST7735_Init();
-	ST7735_FillScreen(ST7735_BLUE);
-
-
-}
-
-void APP_Main(){
-	if((HAL_GetTick() - prev_tick) >= MAIN_LOOP_TIME){
-		prev_tick = HAL_GetTick();
 		LED_Toggle();
-
-		Process_comms();
-
-
-
+		HAL_Delay(100);
 	}
 
+	COMMS_Init(&huart1, g_board_id, RS_485_EN_GPIO_Port, RS_485_EN_Pin);
+}
+
+void APP_Main(void)
+{
+	COMMS_Process();
+	if(g_board_id == BOARD_ID_MASTER)
+	{
+		//LED_On();
+	}
+	else if(g_board_id != BOARD_ID_WRONG) //SLAVE 1/2/3
+	{
+		//LED_Off();
+	}
 }
