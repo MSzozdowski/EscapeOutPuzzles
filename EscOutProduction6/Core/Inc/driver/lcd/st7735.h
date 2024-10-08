@@ -17,12 +17,32 @@
 #define ST7735_SPI_PORT hspi1
 extern SPI_HandleTypeDef ST7735_SPI_PORT;
 
-#define ST7735_RES_Pin       LCD_RST_LEFT_Pin
-#define ST7735_RES_GPIO_Port LCD_RST_LEFT_GPIO_Port
-#define ST7735_CS_Pin        LCD_CS_LEFT_Pin
-#define ST7735_CS_GPIO_Port  LCD_CS_LEFT_GPIO_Port
-#define ST7735_DC_Pin        LCD_A0_LEFT_Pin
-#define ST7735_DC_GPIO_Port  LCD_A0_LEFT_GPIO_Port
+//#define ST7735_RES_Pin       LCD_RST_LEFT_Pin
+//#define ST7735_RES_GPIO_Port LCD_RST_LEFT_GPIO_Port
+//#define ST7735_CS_Pin        LCD_CS_LEFT_Pin
+//#define ST7735_CS_GPIO_Port  LCD_CS_LEFT_GPIO_Port
+//#define ST7735_DC_Pin        LCD_A0_LEFT_Pin
+//#define ST7735_DC_GPIO_Port  LCD_A0_LEFT_GPIO_Port
+
+typedef enum
+{
+	LCD_LEFT,
+	LCD_RIGHT
+}lcd_position_e;
+
+typedef struct
+{
+	SPI_HandleTypeDef spi;
+
+	GPIO_TypeDef *LCD_RES_Port;
+	uint16_t LCD_RES_Pin;
+
+	GPIO_TypeDef *LCD_CS_Port;
+	uint16_t LCD_CS_Pin;
+
+	GPIO_TypeDef *LCD_A0_Port;
+	uint16_t LCD_A0_Pin;
+}lcd_t;
 
 // AliExpress/eBay 1.8" display, default orientation
 /*
@@ -246,16 +266,16 @@ extern "C" {
 // call before initializing any SPI devices
 void ST7735_Unselect();
 
-void ST7735_Init(void);
-void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
-void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor);
-void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
-void ST7735_FillRectangleFast(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
-void ST7735_FillScreen(uint16_t color);
-void ST7735_FillScreenFast(uint16_t color);
-void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
-void ST7735_InvertColors(bool invert);
-void ST7735_SetGamma(GammaDef gamma);
+void ST7735_Init(lcd_t* lcd, GPIO_TypeDef *LCD_RES_Port, uint16_t LCD_RES_Pin, GPIO_TypeDef *LCD_CS_Port, uint16_t LCD_CS_Pin, GPIO_TypeDef *LCD_A0_Port, uint16_t LCD_A0_Pin);
+void ST7735_DrawPixel(lcd_t* lcd, uint16_t x, uint16_t y, uint16_t color);
+void ST7735_WriteString(lcd_t* lcd, uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor);
+void ST7735_FillRectangle(lcd_t* lcd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+void ST7735_FillRectangleFast(lcd_t* lcd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+void ST7735_FillScreen(lcd_t* lcd, uint16_t color);
+void ST7735_FillScreenFast(lcd_t* lcd, uint16_t color);
+void ST7735_DrawImage(lcd_t* lcd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
+void ST7735_InvertColors(lcd_t* lcd, bool invert);
+void ST7735_SetGamma(lcd_t* lcd, GammaDef gamma);
 
 #ifdef __cplusplus
 }

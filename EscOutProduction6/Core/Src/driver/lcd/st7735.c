@@ -85,45 +85,52 @@ static const uint8_t
     ST7735_DISPON ,    DELAY, //  4: Main screen turn on, no args w/delay
       100 };                  //     100 ms delay
 
-static void ST7735_Select() {
-    HAL_GPIO_WritePin(ST7735_CS_GPIO_Port, ST7735_CS_Pin, GPIO_PIN_RESET);
+static void ST7735_Select(lcd_t* lcd) {
+//	HAL_GPIO_WritePin(ST7735_CS_GPIO_Port, ST7735_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(lcd->LCD_CS_Port, lcd->LCD_CS_Pin, GPIO_PIN_RESET);
 }
 
-void ST7735_Unselect() {
-    HAL_GPIO_WritePin(ST7735_CS_GPIO_Port, ST7735_CS_Pin, GPIO_PIN_SET);
+void ST7735_Unselect(lcd_t* lcd) {
+    //HAL_GPIO_WritePin(ST7735_CS_GPIO_Port, ST7735_CS_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(lcd->LCD_CS_Port, lcd->LCD_CS_Pin, GPIO_PIN_RESET);
 }
 
-static void ST7735_Reset() {
-    HAL_GPIO_WritePin(ST7735_RES_GPIO_Port, ST7735_RES_Pin, GPIO_PIN_RESET);
-    HAL_Delay(5);
-    HAL_GPIO_WritePin(ST7735_RES_GPIO_Port, ST7735_RES_Pin, GPIO_PIN_SET);
+static void ST7735_Reset(lcd_t* lcd) {
+//    HAL_GPIO_WritePin(ST7735_RES_GPIO_Port, ST7735_RES_Pin, GPIO_PIN_RESET);
+//    HAL_Delay(5);
+//    HAL_GPIO_WritePin(ST7735_RES_GPIO_Port, ST7735_RES_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(lcd->LCD_RES_Port, lcd->LCD_RES_Pin, GPIO_PIN_RESET);
+	HAL_Delay(5);
+	HAL_GPIO_WritePin(lcd->LCD_RES_Port, lcd->LCD_RES_Pin, GPIO_PIN_SET);
 }
 
-static void ST7735_WriteCommand(uint8_t cmd) {
-    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_RESET);
+static void ST7735_WriteCommand(lcd_t* lcd, uint8_t cmd) {
+//    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(lcd->LCD_A0_Port, lcd->LCD_A0_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&ST7735_SPI_PORT, &cmd, sizeof(cmd), HAL_MAX_DELAY);
 }
 
-static void ST7735_WriteData(uint8_t* buff, size_t buff_size) {
-    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+static void ST7735_WriteData(lcd_t* lcd, uint8_t* buff, size_t buff_size) {
+//    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(lcd->LCD_A0_Port, lcd->LCD_A0_Pin, GPIO_PIN_SET);
     HAL_SPI_Transmit(&ST7735_SPI_PORT, buff, buff_size, HAL_MAX_DELAY);
 }
 
-static void ST7735_ExecuteCommandList(const uint8_t *addr) {
+static void ST7735_ExecuteCommandList(lcd_t* lcd, const uint8_t *addr) {
     uint8_t numCommands, numArgs;
     uint16_t ms;
 
     numCommands = *addr++;
     while(numCommands--) {
         uint8_t cmd = *addr++;
-        ST7735_WriteCommand(cmd);
+        ST7735_WriteCommand(lcd, cmd);
 
         numArgs = *addr++;
         // If high bit set, delay follows args
         ms = numArgs & DELAY;
         numArgs &= ~DELAY;
         if(numArgs) {
-            ST7735_WriteData((uint8_t*)addr, numArgs);
+            ST7735_WriteData(lcd, (uint8_t*)addr, numArgs);
             addr += numArgs;
         }
 
@@ -135,60 +142,69 @@ static void ST7735_ExecuteCommandList(const uint8_t *addr) {
     }
 }
 
-static void ST7735_SetAddressWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) {
+static void ST7735_SetAddressWindow(lcd_t* lcd, uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) {
     // column address set
-    ST7735_WriteCommand(ST7735_CASET);
+    ST7735_WriteCommand(lcd, ST7735_CASET);
     uint8_t data[] = { 0x00, x0 + ST7735_XSTART, 0x00, x1 + ST7735_XSTART };
-    ST7735_WriteData(data, sizeof(data));
+    ST7735_WriteData(lcd, data, sizeof(data));
 
     // row address set
-    ST7735_WriteCommand(ST7735_RASET);
+    ST7735_WriteCommand(lcd, ST7735_RASET);
     data[1] = y0 + ST7735_YSTART;
     data[3] = y1 + ST7735_YSTART;
-    ST7735_WriteData(data, sizeof(data));
+    ST7735_WriteData(lcd, data, sizeof(data));
 
     // write to RAM
-    ST7735_WriteCommand(ST7735_RAMWR);
+    ST7735_WriteCommand(lcd, ST7735_RAMWR);
 }
 
-void ST7735_Init() {
-	HAL_GPIO_WritePin(LCD_PWR_LEFT_GPIO_Port, LCD_PWR_LEFT_Pin, GPIO_PIN_SET);
-	HAL_Delay(500);
-    ST7735_Select();
-    ST7735_Reset();
-    ST7735_ExecuteCommandList(init_cmds1);
-    ST7735_ExecuteCommandList(init_cmds2);
-    ST7735_ExecuteCommandList(init_cmds3);
-    ST7735_Unselect();
+void ST7735_Init(lcd_t* lcd,
+		GPIO_TypeDef *LCD_RES_Port, uint16_t LCD_RES_Pin,
+		GPIO_TypeDef *LCD_CS_Port, uint16_t LCD_CS_Pin,
+		GPIO_TypeDef *LCD_A0_Port, uint16_t LCD_A0_Pin)
+{
+	lcd -> LCD_RES_Port = LCD_RES_Port;
+	lcd -> LCD_RES_Pin = LCD_RES_Pin;
+	lcd -> LCD_CS_Port = LCD_CS_Port;
+	lcd -> LCD_CS_Pin = LCD_CS_Pin;
+	lcd -> LCD_A0_Port = LCD_A0_Port;
+	lcd -> LCD_A0_Pin = LCD_A0_Pin;
+
+    ST7735_Select(lcd);
+    ST7735_Reset(lcd);
+    ST7735_ExecuteCommandList(lcd, init_cmds1);
+    ST7735_ExecuteCommandList(lcd, init_cmds2);
+    ST7735_ExecuteCommandList(lcd, init_cmds3);
+    ST7735_Unselect(lcd);
 }
 
-void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color) {
+void ST7735_DrawPixel(lcd_t* lcd, uint16_t x, uint16_t y, uint16_t color) {
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT))
         return;
 
-    ST7735_Select();
+    ST7735_Select(lcd);
 
-    ST7735_SetAddressWindow(x, y, x+1, y+1);
+    ST7735_SetAddressWindow(lcd, x, y, x+1, y+1);
     uint8_t data[] = { color >> 8, color & 0xFF };
-    ST7735_WriteData(data, sizeof(data));
+    ST7735_WriteData(lcd, data, sizeof(data));
 
-    ST7735_Unselect();
+    ST7735_Unselect(lcd);
 }
 
-static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color, uint16_t bgcolor) {
+static void ST7735_WriteChar(lcd_t* lcd, uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color, uint16_t bgcolor) {
     uint32_t i, b, j;
 
-    ST7735_SetAddressWindow(x, y, x+font.width-1, y+font.height-1);
+    ST7735_SetAddressWindow(lcd, x, y, x+font.width-1, y+font.height-1);
 
     for(i = 0; i < font.height; i++) {
         b = font.data[(ch - 32) * font.height + i];
         for(j = 0; j < font.width; j++) {
             if((b << j) & 0x8000)  {
                 uint8_t data[] = { color >> 8, color & 0xFF };
-                ST7735_WriteData(data, sizeof(data));
+                ST7735_WriteData(lcd, data, sizeof(data));
             } else {
                 uint8_t data[] = { bgcolor >> 8, bgcolor & 0xFF };
-                ST7735_WriteData(data, sizeof(data));
+                ST7735_WriteData(lcd, data, sizeof(data));
             }
         }
     }
@@ -211,8 +227,8 @@ static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint
 }
 */
 
-void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor) {
-    ST7735_Select();
+void ST7735_WriteString(lcd_t* lcd, uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor) {
+    ST7735_Select(lcd);
 
     while(*str) {
         if(x + font.width >= ST7735_WIDTH) {
@@ -229,42 +245,43 @@ void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, u
             }
         }
 
-        ST7735_WriteChar(x, y, *str, font, color, bgcolor);
+        ST7735_WriteChar(lcd, x, y, *str, font, color, bgcolor);
         x += font.width;
         str++;
     }
 
-    ST7735_Unselect();
+    ST7735_Unselect(lcd);
 }
 
-void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) {
+void ST7735_FillRectangle(lcd_t* lcd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) {
     // clipping
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
     if((x + w - 1) >= ST7735_WIDTH) w = ST7735_WIDTH - x;
     if((y + h - 1) >= ST7735_HEIGHT) h = ST7735_HEIGHT - y;
 
-    ST7735_Select();
-    ST7735_SetAddressWindow(x, y, x+w-1, y+h-1);
+    ST7735_Select(lcd);
+    ST7735_SetAddressWindow(lcd, x, y, x+w-1, y+h-1);
 
     uint8_t data[] = { color >> 8, color & 0xFF };
-    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+//    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(lcd->LCD_A0_Port, lcd->LCD_A0_Pin, GPIO_PIN_SET);
     for(y = h; y > 0; y--) {
         for(x = w; x > 0; x--) {
             HAL_SPI_Transmit(&ST7735_SPI_PORT, data, sizeof(data), HAL_MAX_DELAY);
         }
     }
 
-    ST7735_Unselect();
+    ST7735_Unselect(lcd);
 }
 
-void ST7735_FillRectangleFast(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) {
+void ST7735_FillRectangleFast(lcd_t* lcd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) {
     // clipping
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
     if((x + w - 1) >= ST7735_WIDTH) w = ST7735_WIDTH - x;
     if((y + h - 1) >= ST7735_HEIGHT) h = ST7735_HEIGHT - y;
 
-    ST7735_Select();
-    ST7735_SetAddressWindow(x, y, x+w-1, y+h-1);
+    ST7735_Select(lcd);
+    ST7735_SetAddressWindow(lcd, x, y, x+w-1, y+h-1);
 
     // Prepare whole line in a single buffer
     uint8_t pixel[] = { color >> 8, color & 0xFF };
@@ -272,43 +289,44 @@ void ST7735_FillRectangleFast(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ui
     for(x = 0; x < w; ++x)
     	memcpy(line + x * sizeof(pixel), pixel, sizeof(pixel));
 
-    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+//    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(lcd->LCD_A0_Port, lcd->LCD_A0_Pin, GPIO_PIN_SET);
     for(y = h; y > 0; y--)
         HAL_SPI_Transmit(&ST7735_SPI_PORT, line, w * sizeof(pixel), HAL_MAX_DELAY);
 
     free(line);
-    ST7735_Unselect();
+    ST7735_Unselect(lcd);
 }
 
-void ST7735_FillScreen(uint16_t color) {
-    ST7735_FillRectangle(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
+void ST7735_FillScreen(lcd_t* lcd, uint16_t color) {
+    ST7735_FillRectangle(lcd, 0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
 
-void ST7735_FillScreenFast(uint16_t color) {
-    ST7735_FillRectangleFast(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
+void ST7735_FillScreenFast(lcd_t* lcd, uint16_t color) {
+    ST7735_FillRectangleFast(lcd ,0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
 
-void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data) {
+void ST7735_DrawImage(lcd_t* lcd, uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data) {
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
     if((x + w - 1) >= ST7735_WIDTH) return;
     if((y + h - 1) >= ST7735_HEIGHT) return;
 
-    ST7735_Select();
-    ST7735_SetAddressWindow(x, y, x+w-1, y+h-1);
-    ST7735_WriteData((uint8_t*)data, sizeof(uint16_t)*w*h);
-    ST7735_Unselect();
+    ST7735_Select(lcd);
+    ST7735_SetAddressWindow(lcd, x, y, x+w-1, y+h-1);
+    ST7735_WriteData(lcd, (uint8_t*)data, sizeof(uint16_t)*w*h);
+    ST7735_Unselect(lcd);
 }
 
-void ST7735_InvertColors(bool invert) {
-    ST7735_Select();
-    ST7735_WriteCommand(invert ? ST7735_INVON : ST7735_INVOFF);
-    ST7735_Unselect();
+void ST7735_InvertColors(lcd_t* lcd, bool invert) {
+    ST7735_Select(lcd);
+    ST7735_WriteCommand(lcd, invert ? ST7735_INVON : ST7735_INVOFF);
+    ST7735_Unselect(lcd);
 }
 
-void ST7735_SetGamma(GammaDef gamma)
+void ST7735_SetGamma(lcd_t* lcd, GammaDef gamma)
 {
-	ST7735_Select();
-	ST7735_WriteCommand(ST7735_GAMSET);
-	ST7735_WriteData((uint8_t *) &gamma, sizeof(gamma));
-	ST7735_Unselect();
+	ST7735_Select(lcd);
+	ST7735_WriteCommand(lcd, ST7735_GAMSET);
+	ST7735_WriteData(lcd, (uint8_t *) &gamma, sizeof(gamma));
+	ST7735_Unselect(lcd);
 }

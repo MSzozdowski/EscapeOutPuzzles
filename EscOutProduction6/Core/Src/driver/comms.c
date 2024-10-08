@@ -65,7 +65,7 @@ void COMMS_Process(void)
 
 			last_tick = HAL_GetTick();
 		};
-	} else
+	}else if(board_type != BOARD_ID_WRONG) //SLAVE 1/2/3
 	{
 		if(return_eyes_state_flag)
 		{
