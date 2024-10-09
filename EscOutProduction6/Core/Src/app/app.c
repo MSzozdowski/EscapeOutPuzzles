@@ -37,17 +37,17 @@ void APP_Init(void)
 
 	//ST7735_FillScreen(&lcd_right, ST7735_RED);
 
-	for(uint8_t i = 0; i < 10; i++)
-	{
-		if(i%2)
-		{
-			ST7735_FillScreen(&lcd_left, ST7735_BLUE);
-		}
-		else
-		{
-			ST7735_FillScreen(&lcd_left, ST7735_RED);
-		}
-	}
+//	for(uint8_t i = 0; i < 10; i++)
+//	{
+//		if(i%2)
+//		{
+//			ST7735_FillScreen(&lcd_left, ST7735_BLUE);
+//		}
+//		else
+//		{
+//			ST7735_FillScreen(&lcd_left, ST7735_RED);
+//		}
+//	}
 }
 
 void APP_Main(void)

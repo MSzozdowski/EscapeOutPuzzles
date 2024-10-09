@@ -12,11 +12,11 @@
 
 typedef enum
 {
-	BOARD_ID_MASTER = 1,
-	BOARD_ID_SLAVE_1 = 2,
-	BOARD_ID_SLAVE_2 = 3,
-	BOARD_ID_SLAVE_3 = 4,
-	BOARD_ID_WRONG
+	BOARD_ID_MASTER = 0,
+	BOARD_ID_SLAVE_1 = 1,
+	BOARD_ID_SLAVE_2 = 2,
+	BOARD_ID_SLAVE_3 = 3,
+	BOARD_ID_WRONG = 4,
 }board_id_e;
 
 typedef struct{

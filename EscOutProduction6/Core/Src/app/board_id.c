@@ -33,7 +33,7 @@ board_id_e BOARD_ID_GetBoardID(void)
 			}
 			else
 			{
-				board_id = (i + 1);
+				board_id = i;
 				two_keys_switched_flag = 1;
 			}
 		}
