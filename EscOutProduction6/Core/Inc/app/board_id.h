@@ -10,6 +10,8 @@
 
 #define MCU_SEL_PINS 4
 
+#include "gpio.h"
+
 typedef enum
 {
 	BOARD_ID_MASTER = 0,
@@ -25,5 +27,6 @@ typedef struct{
 }board_id_ports_t;
 
 board_id_e BOARD_ID_GetBoardID(void);
+board_id_e BOARD_ID_GetBoardIDUntilCorrect(void);
 
 #endif /* INC_APP_BOARD_ID_H_ */

@@ -10,9 +10,9 @@
 
 #include "app/board_id.h"
 
-#define MASTER_TRANSMIT_INTERVAL	2000
-
+#define MASTER_TRANSMIT_INTERVAL	1000
 #define RECEIVE_BUFFER_SIZE			8
+#define EYES_STATE_NO				4
 
 typedef enum
 {
@@ -34,7 +34,7 @@ typedef enum
 typedef enum
 {
 	MASTER_TO_SLAVE = 0x3E, // '>'
-	SLAVE_TO_MASTER = 0x3C, // '<'
+	SLAVE_TO_MASTER = 0x3C  // '<'
 }frame_type_e;
 
 typedef struct

@@ -8,24 +8,32 @@
 #ifndef INC_DOOR_H_
 #define INC_DOOR_H_
 
-#define DOOR_OPEN_TIME 200
-#define DOOR_RETRY_DELAY 750
-#define DOOR_NEXT_TRY_TIME 2000
-#define DOOR_DEBOUNCE_TIME 100
+#define DOOR_OPEN_TIME 1000
+#define NEXT_DOOR_OPEN_TIME 500
 
 #include "stdbool.h"
 
-typedef enum{
+typedef enum {
 	DOOR_IDLE,
-	START_OPENING,
-	CHECK_OPEN_STATUS,
+	OPEN,
 	WAIT_FOR_NEXT_OPEN,
-	STOP_OPENING
 }door_state_t;
 
-void DOOR_Process(void);
-void DOOR_Open(void);
-bool DOOR_IsOpen(void);
-bool DOOR_IsLastDoorOpenFailed(void);
+typedef struct
+{
+	door_state_t door_state;
+	GPIO_TypeDef 	*GpioPort;
+	uint16_t 		GpioPin;
+	uint32_t 		last_tick;
+	bool request_to_open;
+}door_t;
+
+extern door_t door;
+
+void DOOR_Init(door_t* door, GPIO_TypeDef *GpioPort, uint16_t GpioPin);
+void DOOR_Process(door_t* door);
+void DOOR_Open(door_t* door);
+void DOOR_OpenPernament(door_t* door);
+void DOOR_ClosePernament(door_t* door);
 
 #endif /* INC_DOOR_H_ */

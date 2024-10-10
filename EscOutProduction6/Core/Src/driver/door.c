@@ -6,109 +6,72 @@
  */
 
 #include "main.h"
-#include "door.h"
+#include "driver/door.h"
 #include "stdbool.h"
 
-static void RELAY_On(void);
-static void RELAY_Off(void);
+static void RELAY_On(door_t* door);
+static void RELAY_Off(door_t* door);
 
-static door_state_t door_state = DOOR_IDLE;
-static bool request_to_open = false;
-static bool last_open_failed = false;
-static uint32_t last_tick;
-
-void DOOR_Process(void)
+void DOOR_Init(door_t* door, GPIO_TypeDef *GpioPort, uint16_t GpioPin)
 {
-	static uint8_t retry_counter = 0;
-	switch (door_state) {
+	door->door_state = DOOR_IDLE;
+	door->GpioPort = GpioPort;
+	door->GpioPin = GpioPin;
+	door->request_to_open = false;
+}
+
+void DOOR_Process(door_t* door)
+{
+	switch (door->door_state) {
 		case DOOR_IDLE:
-			if(request_to_open)
+			if(door->request_to_open == true)
 			{
-				door_state = START_OPENING;
-				RELAY_On();
-				last_tick = HAL_GetTick();
+				RELAY_On(door);
+				door->door_state = OPEN;
+				door->last_tick = HAL_GetTick();
 			}
 			break;
 
-		case START_OPENING:
-			if(HAL_GetTick() - last_tick > DOOR_OPEN_TIME)
+		case OPEN:
+			if(HAL_GetTick() - door->last_tick > DOOR_OPEN_TIME)
 			{
-				door_state = CHECK_OPEN_STATUS;
-				RELAY_Off();
-				last_tick = HAL_GetTick();
+				RELAY_Off(door);
+				door->door_state = WAIT_FOR_NEXT_OPEN;
+				door->last_tick = HAL_GetTick();
 			}
 		break;
 
-		case CHECK_OPEN_STATUS:
-			if(HAL_GetTick() - last_tick > DOOR_DEBOUNCE_TIME)
-			{
-				if(DOOR_IsOpen() == true)
-				{
-					door_state = STOP_OPENING;
-				}
-				else
-				{
-					if(retry_counter++ < 3)
-						door_state = WAIT_FOR_NEXT_OPEN;
-					else
-					{
-						door_state = STOP_OPENING;
-						last_open_failed = true;
-					}
-
-				}
-				last_tick = HAL_GetTick();
-			}
-			break;
-
 		case WAIT_FOR_NEXT_OPEN:
-			if(HAL_GetTick() - last_tick > DOOR_RETRY_DELAY)
+			if(HAL_GetTick() - door->last_tick > NEXT_DOOR_OPEN_TIME)
 			{
-				door_state = DOOR_IDLE;
+				door->request_to_open = false;
+				door->door_state = DOOR_IDLE;
 			}
-			break;
-
-		case STOP_OPENING:
-			if(HAL_GetTick() - last_tick > DOOR_NEXT_TRY_TIME)
-			{
-				door_state = DOOR_IDLE;
-				retry_counter = 0;
-				request_to_open = false;
-				last_open_failed = false;
-			}
-			break;
-
-		default:
-			break;
+		break;
 	}
 }
 
-bool DOOR_IsOpen(void)
+void DOOR_Open(door_t* door)
 {
-	// 1 - doors are opened
-	// 0 - doors are closed
-	if(HAL_GPIO_ReadPin(LOCK_STATE_GPIO_Port, LOCK_STATE_Pin) == GPIO_PIN_SET)
-		return true;
-	else
-		return false;
+	door->request_to_open = true;
 }
 
-bool DOOR_IsLastDoorOpenFailed(void)
+void DOOR_OpenPernament(door_t* door)
 {
-	return last_open_failed;
+	RELAY_On(door);
 }
 
-void DOOR_Open(void)
+void DOOR_ClosePernament(door_t* door)
 {
-	request_to_open = true;
+	RELAY_Off(door);
 }
 
-static void RELAY_On(void)
+static void RELAY_On(door_t* door)
 {
-	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(door->GpioPort, door->GpioPin, GPIO_PIN_SET);
 }
 
-static void RELAY_Off(void)
+static void RELAY_Off(door_t* door)
 {
-	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(door->GpioPort, door->GpioPin, GPIO_PIN_RESET);
 }

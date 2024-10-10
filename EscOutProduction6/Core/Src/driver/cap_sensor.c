@@ -6,7 +6,7 @@
  */
 
 #include "main.h"
-#include "cap_sensor.h"
+#include "driver/cap_sensor.h"
 
 static GPIO_PinState CAP_SENSOR_GetPinState(void);
 
@@ -55,6 +55,7 @@ void CAP_SENSOR_Process(void)
 			break;
 	}
 }
+
 
 static GPIO_PinState CAP_SENSOR_GetPinState(void)
 {

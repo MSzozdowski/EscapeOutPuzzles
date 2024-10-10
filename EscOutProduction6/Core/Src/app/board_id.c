@@ -5,8 +5,8 @@
  *      Author: stasz
  */
 #include "main.h"
-#include "gpio.h"
 #include "app/board_id.h"
+#include "driver/led.h"
 
 static board_id_ports_t board_id_ports[4] = {
 		{MCU_SEL1_GPIO_Port,MCU_SEL1_Pin},
@@ -49,5 +49,18 @@ board_id_e BOARD_ID_GetBoardID(void)
 		return BOARD_ID_SLAVE_3;
 	else
 		return BOARD_ID_WRONG;
+}
 
+board_id_e BOARD_ID_GetBoardIDUntilCorrect(void)
+{
+	board_id_e board_id = BOARD_ID_GetBoardID();
+	//#TODO: CREATE LED TOGGLING FUNCTION
+	while(board_id == BOARD_ID_WRONG)
+	{
+		board_id = BOARD_ID_GetBoardID();
+		LED_Toggle();
+		HAL_Delay(100);
+	}
+
+	return board_id;
 }
