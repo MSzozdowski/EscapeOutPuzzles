@@ -9,7 +9,7 @@
 #define INC_DOOR_H_
 
 #define DOOR_OPEN_TIME 1000
-#define NEXT_DOOR_OPEN_TIME 500
+#define NEXT_DOOR_OPEN_TIME 750
 
 #include "stdbool.h"
 

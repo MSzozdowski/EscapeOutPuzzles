@@ -9,6 +9,7 @@
 #include "usart.h"
 #include "driver/led.h"
 #include "driver/door.h"
+#include "app/display_eye.h"
 #include "string.h"
 
 static void COMMS_RS485_TransmitCommand(uint8_t* command);
@@ -18,6 +19,7 @@ static void SensorCallback(void);
 static void COMMS_SetNextEyeState(board_id_e board_id);
 static uint8_t COMMS_CheckIsSolved(void);
 static void COMMS_ResetEyesStateArray(void);
+static void COMMS_ClearReceiveBuffer(void);
 
 static UART_HandleTypeDef* comms_uart;
 static board_id_e board_type;
@@ -33,7 +35,7 @@ static slave_frame_t slave_frame;
 static master_frame_t master_frame;
 
 static eyes_state_e eyes_state_array[EYES_STATE_NO] = {EYES_ARE_CENTER, EYES_ARE_CENTER, EYES_ARE_CENTER, EYES_ARE_CENTER};
-static eyes_state_e eyes_solution_array[EYES_STATE_NO] = {EYES_ARE_UP, EYES_ARE_UP, EYES_ARE_CENTER, EYES_ARE_CENTER}; //LEFT UP RIGHT DOWN
+static eyes_state_e eyes_solution_array[EYES_STATE_NO] = {EYES_ARE_LEFT, EYES_ARE_UP, EYES_ARE_RIGHT, EYES_ARE_DOWN}; //LEFT UP RIGHT DOWN
 
 void COMMS_Init(UART_HandleTypeDef* uart, board_id_e board_id, GPIO_TypeDef *GPIO_Port_En, uint16_t GPIO_Pin_En)
 {
@@ -77,6 +79,7 @@ void COMMS_Process(void)
 
 		if(HAL_GetTick() - last_tick >= MASTER_TRANSMIT_INTERVAL && !clear_eyes_flag)
 		{
+			LED_Toggle();
 			switch (master_array_pointer)
 			{
 				case BOARD_ID_SLAVE_1:
@@ -108,7 +111,9 @@ void COMMS_Process(void)
 		if(return_eyes_state_flag)
 		{
 			LED_Toggle();
+			slave_frame.frame_type = SLAVE_TO_MASTER;
 			slave_frame.state = eyes_state_array[board_type];
+			slave_frame.board_type = board_type;
 			COMMS_RS485_TransmitCommand((uint8_t*)&slave_frame);
 			return_eyes_state_flag = 0;
 		}
@@ -176,17 +181,13 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 					eyes_state_array[slave_frame.board_type] = slave_frame.state;
 				break;
 		}
+		COMMS_ClearReceiveBuffer();
 	}
 }
 
 static void SensorCallback(void)
 {
 	COMMS_SetNextEyeState(board_type);
-
-	if(board_type == BOARD_ID_MASTER)
-	{
-
-	}
 }
 
 static void COMMS_SetNextEyeState(board_id_e board_id)
@@ -212,13 +213,14 @@ static void COMMS_SetNextEyeState(board_id_e board_id)
 			eyes_state_array[board_id] = EYES_ARE_UP;
 			break;
 	}
+	DrawEye(eyes_state_array[board_id]);
 }
 
 static uint8_t COMMS_CheckIsSolved(void)
 {
 	for(uint8_t i = 0; i < EYES_STATE_NO; i++)
 	{
-		if(eyes_state_array[i] != eyes_solution_array[i])
+ 		if(eyes_state_array[i] != eyes_solution_array[i])
 		{
 			return 0;
 		}
@@ -231,6 +233,14 @@ static void COMMS_ResetEyesStateArray(void)
 	for(uint8_t i = 0; i < EYES_STATE_NO; i++)
 	{
 		eyes_state_array[i] = EYES_ARE_CENTER;
-//		#TODO: Reset LCD Eyes State
+	}
+	DrawEye(EYES_ARE_CENTER);
+}
+
+static void COMMS_ClearReceiveBuffer(void)
+{
+	for(uint8_t i = 0; i < RECEIVE_BUFFER_SIZE; i ++)
+	{
+		comms_receive_buffer[i] = 0;
 	}
 }

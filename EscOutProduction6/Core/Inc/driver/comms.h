@@ -10,7 +10,7 @@
 
 #include "app/board_id.h"
 
-#define MASTER_TRANSMIT_INTERVAL	1000
+#define MASTER_TRANSMIT_INTERVAL	200
 #define RECEIVE_BUFFER_SIZE			8
 #define EYES_STATE_NO				4
 

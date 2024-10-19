@@ -8,16 +8,10 @@
 #ifndef INC_APP_DISPLAY_EYE_H_
 #define INC_APP_DISPLAY_EYE_H_
 
-typedef enum{
-	CENTER = 0,
-	UP,
-	RIGHT,
-	DOWN,
-	LEFT
-}direction_e;
+#include "driver/comms.h"
 
-void draw_eye_init(void);
-void draw_eye(direction_e d);
-void draw_eye_test(void);
+void DrawEyeInit(void);
+void DrawEye(eyes_state_e eye_state);
+void DrawEyeTest(void);
 
 #endif /* INC_APP_DISPLAY_EYE_H_ */
