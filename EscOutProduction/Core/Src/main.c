@@ -131,7 +131,13 @@ int main(void)
   }
 
   if(reset_cause_get() != RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET)
-  	  DOOR_Open();
+  {
+	  if(board_id == BOARD_IS_SHOUT_LED || BOARD_IS_KNOCKING)
+	  {
+		  DOOR_Open();
+	  }
+  }
+
 
   uint32_t error_tick = 0;
   /* USER CODE END 2 */
@@ -143,14 +149,17 @@ int main(void)
 	  switch (board_id) {
 		case BOARD_IS_KNOCKING:
 			KNOCKING_Process();
+			DOOR_Process(LOCK);
 			break;
 
 		case BOARD_IS_SHOUT_LED:
 			ShoutLED_Process();
+			DOOR_Process(LOCK);
 			break;
 
 		case BOARD_IS_SWITCH_GAME:
 			SWITCH_GAME_Process();
+			DOOR_Process(ELECTROMAGNET);
 			break;
 
 		case BOARD_NOT_DEFINED:
@@ -161,7 +170,7 @@ int main(void)
 			}
 			break;
 	}
-	DOOR_Process();
+
 	WATCHDOG_Refresh();
     /* USER CODE END WHILE */
 

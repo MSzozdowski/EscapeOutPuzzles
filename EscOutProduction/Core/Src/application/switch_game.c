@@ -113,11 +113,15 @@ static void SWITCH_GAME_Finish(void)
 			case 2:
 				if(HAL_GetTick() - last_tick > CHECK_DOOR_STATUS_DELAY)
 				{
-					if(DOOR_IsOpen() == false)
+					if(button_red.button_state == BUTTON_PRESSED &&
+					   button_blue.button_state == BUTTON_PRESSED &&
+					   button_green.button_state == BUTTON_IDLE &&
+					   button_green.button_state == BUTTON_IDLE)
 					{
 						stage = 0;
 						switch_game_state = SWITCH_GAME_INIT;
 					}
+
 				}
 				break;
 	}
