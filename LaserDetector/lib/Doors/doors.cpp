@@ -65,10 +65,10 @@ bool DOORS_DoorsReady(void)
 
 static void RELAY_On(void)
 {
-    digitalWrite(RELAY_PIN, HIGH);
+    digitalWrite(RELAY_PIN, LOW);
 }
 
 static void RELAY_Off(void)
 {
-    digitalWrite(RELAY_PIN, LOW);
+    digitalWrite(RELAY_PIN, HIGH);
 }

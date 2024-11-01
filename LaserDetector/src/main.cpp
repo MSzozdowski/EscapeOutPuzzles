@@ -172,7 +172,6 @@ void loop()
 
   case DOOR_OPEN:
     DOORS_Open();
-    LEDS_LedsToggleAll();
     Serial.println("Open doors");
     game_stage = WAIT_FOR_NEXT_GAME;
     break;
@@ -180,6 +179,7 @@ void loop()
   case WAIT_FOR_NEXT_GAME:
     if(DOORS_DoorsReady())
     {
+      LEDS_LedsToggleAll();
       game_stage = WAIT_FOR_SENS1;
       Serial.println("New game started");
     }
