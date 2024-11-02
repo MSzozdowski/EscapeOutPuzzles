@@ -6,14 +6,19 @@
 #define DISPLAY_SENS_DATA 500
 #define LED_SOLVE_BLINK_TIMES 8
 #define LED_BLINK_TIME 250
-
+#define DELAY_BEETWEEN_STATES 200
 typedef enum
 {
   WAIT_FOR_SENS1,
+  DELAY1,
   WAIT_FOR_SENS2,
+  DELAY2,
   WAIT_FOR_SENS3,
+  DELAY3,
   WAIT_FOR_SENS4,
+  DELAY4,
   WAIT_FOR_SENS5,
+  DELAY5,
   WAIT_FOR_SENS6,
   SOLVED_LED_BLINK,
   DOOR_OPEN,
@@ -44,7 +49,7 @@ void loop()
     {
       Serial.print("Sensor1 detected!: ");
       Serial.println(sensor_value);
-      game_stage = WAIT_FOR_SENS2;
+      game_stage = DELAY1;
       sensor_value = 255;
       LEDS_LedOn(LED1);
     }
@@ -58,13 +63,21 @@ void loop()
 
     break;
 
+  case DELAY1:
+    if (millis() - tick > DELAY_BEETWEEN_STATES)
+    {
+      game_stage = WAIT_FOR_SENS2;
+      tick = millis();
+    }
+    break;
+
   case WAIT_FOR_SENS2:
     sensor_value = SENSOR_ReturnSensValue(SENSOR2);
     if (sensor_value < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor2 detected!: ");
       Serial.println(sensor_value);
-      game_stage = WAIT_FOR_SENS3;
+      game_stage = DELAY2;
       sensor_value = 255;
       LEDS_LedOn(LED2);
     }
@@ -77,13 +90,21 @@ void loop()
     }
     break;
 
+  case DELAY2:
+    if (millis() - tick > DELAY_BEETWEEN_STATES)
+    {
+      game_stage = WAIT_FOR_SENS3;
+      tick = millis();
+    }
+    break;
+
   case WAIT_FOR_SENS3:
     sensor_value = SENSOR_ReturnSensValue(SENSOR3);
     if (sensor_value < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor3 detected!: ");
       Serial.println(sensor_value);
-      game_stage = WAIT_FOR_SENS4;
+      game_stage = DELAY3;
       sensor_value = 255;
       LEDS_LedOn(LED3);
     }
@@ -96,13 +117,21 @@ void loop()
     }
     break;
 
+  case DELAY3:
+    if (millis() - tick > DELAY_BEETWEEN_STATES)
+    {
+      game_stage = WAIT_FOR_SENS4;
+      tick = millis();
+    }
+    break;
+
   case WAIT_FOR_SENS4:
     sensor_value = SENSOR_ReturnSensValue(SENSOR4);
     if (sensor_value < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor4 detected!: ");
       Serial.println(sensor_value);
-      game_stage = WAIT_FOR_SENS5;
+      game_stage = DELAY4;
       sensor_value = 255;
       LEDS_LedOn(LED4);
     }
@@ -115,13 +144,21 @@ void loop()
     }
     break;
 
+  case DELAY4:
+    if (millis() - tick > DELAY_BEETWEEN_STATES)
+    {
+      game_stage = WAIT_FOR_SENS5;
+      tick = millis();
+    }
+    break;
+
   case WAIT_FOR_SENS5:
     sensor_value = SENSOR_ReturnSensValue(SENSOR5);
     if (sensor_value < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor5 detected!: ");
       Serial.println(sensor_value);
-      game_stage = WAIT_FOR_SENS6;
+      game_stage = DELAY5;
       sensor_value = 255;
       LEDS_LedOn(LED5);
     }
@@ -130,6 +167,14 @@ void loop()
     {
       Serial.print("Sensor5 value:");
       Serial.println(sensor_value);
+      tick = millis();
+    }
+    break;
+
+  case DELAY5:
+    if (millis() - tick > DELAY_BEETWEEN_STATES)
+    {
+       game_stage = WAIT_FOR_SENS6;
       tick = millis();
     }
     break;
@@ -177,7 +222,7 @@ void loop()
     break;
 
   case WAIT_FOR_NEXT_GAME:
-    if(DOORS_DoorsReady())
+    if (DOORS_DoorsReady())
     {
       LEDS_LedsToggleAll();
       game_stage = WAIT_FOR_SENS1;

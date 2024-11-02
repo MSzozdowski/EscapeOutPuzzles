@@ -10,7 +10,7 @@
 #define SENSOR5 A5
 #define SENSOR6 A4
 
-#define SENSOR_THRESHOLD_VALUE 100
+#define SENSOR_THRESHOLD_VALUE 50
 
 uint8_t SENSOR_ReturnSensValue(uint8_t sens_no);
 
