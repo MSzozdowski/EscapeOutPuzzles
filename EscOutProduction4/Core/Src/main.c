@@ -88,6 +88,7 @@ int main(void)
   MX_GPIO_Init();
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
+  __HAL_DBGMCU_FREEZE_IWDG();
   TOY_PULLING_Init();
   DEBUG_LED_Blink(1);
   /* USER CODE END 2 */

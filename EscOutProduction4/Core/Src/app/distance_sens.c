@@ -52,6 +52,7 @@ void DISTANCE_SENS_Process(distance_sens_t* distance_sens)
 				}
 			}
 			break;
+
 		case DISTANCE_SENS_WAIT:
 			if(DISTANCE_SENS_GetState(distance_sens) == GPIO_PIN_SET && HAL_GetTick() - distance_sens->distance_sens_tick > DISTANCE_SENS_WAIT_TIME)
 			{
