@@ -33,15 +33,18 @@ void METAL_BALL_Process(void)
 			if(sensor_detected_flag == true)
 			{
 				metal_ball_state = METAL_BALL_DETECTED;
+				metal_ball_tick = HAL_GetTick();
 			}
 			break;
 
 		case METAL_BALL_DETECTED:
-			DOOR_Open();
-			metal_ball_state = METAL_BALL_WAIT;
-			metal_ball_tick = HAL_GetTick();
+			if(HAL_GetTick() - metal_ball_tick > METAL_BALL_DELAY_REACTION)
+			{
+				DOOR_Open();
+				metal_ball_state = METAL_BALL_WAIT;
+				metal_ball_tick = HAL_GetTick();
+			}
 			break;
-
 		case METAL_BALL_WAIT:
 			if(HAL_GetTick() - metal_ball_tick > METAL_BALL_NEXT_ROUND_TIME && CAP_SENSOR_GetState() == CAP_SENS_NOT_DETECTED)
 			{
