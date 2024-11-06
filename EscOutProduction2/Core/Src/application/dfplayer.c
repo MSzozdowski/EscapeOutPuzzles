@@ -13,13 +13,13 @@ UART_HandleTypeDef *dfp_uart;
 
 //uint8_t dfplayer_buffer[MAX_COM_PARAM_QUE][3] = {0};
 
-static void DFPLAYER_Busy(busy_state_t busy_state)
-{
-	if(busy_state == DFP_ON)
-		HAL_GPIO_WritePin(DFP_BUSY_GPIO_Port, DFP_BUSY_Pin, GPIO_PIN_RESET);
-	else
-		HAL_GPIO_WritePin(DFP_BUSY_GPIO_Port, DFP_BUSY_Pin, GPIO_PIN_SET);
-}
+//static void DFPLAYER_Busy(busy_state_t busy_state)
+//{
+//	if(busy_state == DFP_ON)
+//		HAL_GPIO_WritePin(DFP_BUSY_GPIO_Port, DFP_BUSY_Pin, GPIO_PIN_RESET);
+//	else
+//		HAL_GPIO_WritePin(DFP_BUSY_GPIO_Port, DFP_BUSY_Pin, GPIO_PIN_SET);
+//}
 
 static void DFPLAYER_SendCommand(uint8_t command, uint8_t param1, uint8_t param2)
 {
@@ -34,7 +34,7 @@ static void DFPLAYER_SendCommand(uint8_t command, uint8_t param1, uint8_t param2
 void DFPLAYER_Init(UART_HandleTypeDef* uart)
 {
 	dfp_uart = uart;
-	DFPLAYER_Busy(DFP_ON);
+//	DFPLAYER_Busy(DFP_ON);
 
 //	DFPLAYER_SendCommand(QRY_CUR_STAT, 0x00, 0x00);
 
