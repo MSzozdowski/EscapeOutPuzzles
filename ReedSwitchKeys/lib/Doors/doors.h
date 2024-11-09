@@ -4,7 +4,7 @@
 #define DOOR_OPEN_TIME 1000
 #define DOOR_NEXT_TRY_TIME 5000
 
-#define RELAY_PIN 12
+#define RELAY_PIN A5
 
 typedef enum
 {

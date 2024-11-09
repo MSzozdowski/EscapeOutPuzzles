@@ -8,7 +8,6 @@ ReedSwitchActive reed_callback = NULL;
 
 void REED_SW_Init(reed_sw* reed_sw, uint8_t GpioPin, uint8_t reed_id)
 {
-    //pinMode(reed_sw->GpioPin, INPUT_PULLUP);
 	reed_sw->reed_sw_state = REED_SW_IDLE;
 	reed_sw->GpioPin = GpioPin;
 	reed_sw->reed_sw_tick = 0;

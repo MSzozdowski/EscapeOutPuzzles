@@ -6,6 +6,7 @@
 #define REED_SW_DEBOUNCE_TIME 100
 #define REED_SW_WAIT_TIME 500
 
+
 typedef enum
 {
 	REED_SW_IDLE,
@@ -28,5 +29,6 @@ void REED_SW_Process(reed_sw* reed_sw);
 void REED_SW_Toggle(void);
 
 void ReedSwitchCallBack(ReedSwitchActive callback);
+
 
 #endif
