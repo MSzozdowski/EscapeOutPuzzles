@@ -1,28 +1,26 @@
 #include <Arduino.h>
-#include "Adafruit_NeoPixel.h"
 #include "ledstrip.h"
 #include "microphone.h"
+#include "doors.h"
 
-#define MICROPHONE_THRESHOLD_VALUE 100
-#define LED_FILL_TIME 10000
-#define LED_FADE_TIME 10000
+#define MICROPHONE_THRESHOLD_VALUE 90
 #define NO_OF_LEDS 8
-#define CHECK_MICROPHONE_INTERVAL 250
+#define CHECK_MICROPHONE_INTERVAL 100
+
+#define ZERO_PERCENT 0
+#define ONE_HUNDREAD_PERCENT 200
+
+#define PUZZLE_SOLVE_WAIT_TIME 5000
 
 typedef enum
 {
   PUZZLE_INIT,
   PUZZLE_IDLE,
   PUZZLE_FILLING_LEDS,
-  PUZZLE_FADING_LEDS
+  PUZZLE_FADING_LEDS,
+  PUZZLE_SOLVED
 } puzzle_state_t;
 
-unsigned long lastCheckTime = 0;
-unsigned long fillStartTime = 0;
-unsigned long fadeStartTime = 0;
-
-uint8_t ledFillProgress = 0;
-uint8_t ledFadeProgress = NO_OF_LEDS;
 puzzle_state_t puzzle_state = PUZZLE_INIT;
 
 void setup()
@@ -30,19 +28,21 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   Serial.begin(9600);
   LED_STRIP_Init();
+  DOORS_Init();
 }
 
 static unsigned long currentMillis = 0;
-
+uint16_t progress = 0;
+uint16_t mapped_progress = 0;
 void loop()
 {
-
   MICROPHONE_Process();
+  DOORS_Process();
 
   switch (puzzle_state)
   {
   case PUZZLE_INIT:
-    LED_STRIP_SetColor(0, NO_OF_LEDS - 1, RED);
+    LED_STRIP_SetColor(0, NO_OF_LEDS, RED);
     puzzle_state = PUZZLE_IDLE;
     Serial.println("Puzzle init all leds are red");
     break;
@@ -50,47 +50,50 @@ void loop()
   case PUZZLE_IDLE:
     if (MICROPHONE_GetAverage() > MICROPHONE_THRESHOLD_VALUE)
     {
-      LED_STRIP_SetColor(0, NO_OF_LEDS - 1, OFF);
-      fillStartTime = millis();
-      ledFillProgress = 0;
+      progress = 0;
+      currentMillis = millis();
       puzzle_state = PUZZLE_FILLING_LEDS;
       Serial.println("Puzzle blowing detected");
     }
     break;
 
   case PUZZLE_FILLING_LEDS:
-    if (millis() - currentMillis > CHECK_MICROPHONE_INTERVAL)
+    if(millis() - currentMillis > CHECK_MICROPHONE_INTERVAL)
     {
       currentMillis = millis();
-      if (MICROPHONE_GetAverage() > MICROPHONE_THRESHOLD_VALUE)
+      if(MICROPHONE_GetAverage() > MICROPHONE_THRESHOLD_VALUE)
       {
-        ledFillProgress = map(currentMillis - fillStartTime, 0, LED_FILL_TIME, 0, NO_OF_LEDS);
-        LED_STRIP_SetColor(0, ledFillProgress, GREEN);
-        Serial.print("ledFillProgress: ");
-        Serial.println(ledFillProgress);
+        progress+=3;
+        mapped_progress = map(progress, ZERO_PERCENT, ONE_HUNDREAD_PERCENT, 0, NO_OF_LEDS);
+        LED_STRIP_SetColor(0, mapped_progress, BLUE);
+        Serial.print("Mapped progress: ");
+        Serial.println(mapped_progress);
+        if(mapped_progress == NO_OF_LEDS)
+        {
+          puzzle_state = PUZZLE_SOLVED;
+          DOORS_Open();
+        }
       }
       else
       {
         puzzle_state = PUZZLE_FADING_LEDS;
-        fadeStartTime = ledFillProgress;
-        Serial.println("Blowing stopped - fade leds");
       }
     }
-
     break;
 
   case PUZZLE_FADING_LEDS:
-    if (millis() - currentMillis > CHECK_MICROPHONE_INTERVAL)
+    if(millis() - currentMillis > CHECK_MICROPHONE_INTERVAL)
     {
       currentMillis = millis();
-      if (MICROPHONE_GetAverage() < MICROPHONE_THRESHOLD_VALUE)
+      if(MICROPHONE_GetAverage() < MICROPHONE_THRESHOLD_VALUE)
       {
-        ledFadeProgress = map(currentMillis - fadeStartTime, 0, LED_FADE_TIME, NO_OF_LEDS, 0);
-        LED_STRIP_SetColor(0, NO_OF_LEDS - 1, OFF);
-        LED_STRIP_SetColor(0, ledFadeProgress, GREEN);
-        Serial.print("ledFadeProgress: ");
-        Serial.println(ledFadeProgress);
-        if(ledFadeProgress == 0)
+        progress-=2;
+        mapped_progress = map(progress, ZERO_PERCENT, ONE_HUNDREAD_PERCENT, 0, NO_OF_LEDS);
+        LED_STRIP_SetColor(0, mapped_progress, BLUE);
+        Serial.print("Mapped progress: ");
+        Serial.println(mapped_progress);
+
+        if(mapped_progress == 0)
         {
           puzzle_state = PUZZLE_INIT;
         }
@@ -98,10 +101,15 @@ void loop()
       else
       {
         puzzle_state = PUZZLE_FILLING_LEDS;
-        fillStartTime = fadeStartTime;
-        Serial.println("Blowing started again - fill leds");
       }
     }
     break;
+
+   case PUZZLE_SOLVED:
+   if(millis() - currentMillis > PUZZLE_SOLVE_WAIT_TIME)
+   {
+    puzzle_state = PUZZLE_INIT;
+   }
+   break; 
   }
 }
