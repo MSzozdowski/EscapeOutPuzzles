@@ -4,7 +4,6 @@
 #include "doors.h"
 
 #define MICROPHONE_THRESHOLD_VALUE 90
-#define NO_OF_LEDS 8
 #define CHECK_MICROPHONE_INTERVAL 100
 
 #define ZERO_PERCENT 0

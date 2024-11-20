@@ -107,6 +107,7 @@ int main(void)
   /* Initialize interrupts */
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
+  __HAL_DBGMCU_FREEZE_IWDG();
   BOARD_ID_Init(&hadc1, ADC_CHANNEL_1);
   board_id = BOARD_ID_GetBoardID();
   if(board_id == BOARD_IS_KNOCKING)
@@ -132,12 +133,11 @@ int main(void)
 
   if(reset_cause_get() != RESET_CAUSE_INDEPENDENT_WATCHDOG_RESET)
   {
-	  if(board_id == BOARD_IS_SHOUT_LED || BOARD_IS_KNOCKING)
+	  if(BOARD_IS_KNOCKING)
 	  {
 		  DOOR_Open();
 	  }
   }
-
 
   uint32_t error_tick = 0;
   /* USER CODE END 2 */
@@ -154,7 +154,7 @@ int main(void)
 
 		case BOARD_IS_SHOUT_LED:
 			ShoutLED_Process();
-			DOOR_Process(LOCK);
+			DOOR_Process(ELECTROMAGNET);
 			break;
 
 		case BOARD_IS_SWITCH_GAME:

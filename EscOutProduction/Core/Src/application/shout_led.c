@@ -174,14 +174,9 @@ void ShoutLED_Process(void)
 			break;
 
 		case FINISH:
-			//if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
-			if(HAL_GetTick() - last_tick > CHECK_DOOR_STATUS_DELAY)
+			if(HAL_GetTick() - last_tick > NEXT_ROUND_DELAY)
 			{
-				if(DOOR_IsOpen() == false)
-				{
-					shout_led_state = LED_IDLE;
-					WS2812_SetAllOff();
-				}
+					shout_led_state = INIT;
 			}
 
 			break;

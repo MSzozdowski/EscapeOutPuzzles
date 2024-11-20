@@ -37,7 +37,7 @@
 #define BLINK_TIME_STEP 100
 
 #define NEXT_ROUND_DELAY 5000
-#define CHECK_DOOR_STATUS_DELAY 500
+
 
 typedef enum
 {
