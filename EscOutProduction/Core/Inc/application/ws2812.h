@@ -8,7 +8,7 @@
 #ifndef INC_WS2812_H_
 #define INC_WS2812_H_
 
-#define WS2812_LED_NUMBER 50
+#define WS2812_LED_NUMBER 20
 
 #define WS2812_RESET_BYTES 72
 #define WS2812_BYTES_PER_LED 24
