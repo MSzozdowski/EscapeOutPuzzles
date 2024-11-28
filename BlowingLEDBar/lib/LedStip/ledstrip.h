@@ -4,7 +4,7 @@
 #include "stdint.h"
 
 #define LED_STRIP_PIN 3
-#define NO_OF_LEDS  82
+#define NO_OF_LEDS  76
 
 #define RED 0xFF0000
 #define GREEN 0x00FF00
