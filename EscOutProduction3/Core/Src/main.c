@@ -113,6 +113,7 @@ int main(void)
   {
 	  DEBUG_LED_Blink(2);
 	  CAP_SENSE_PLAYER_Init();
+	  DOOR_Open();
   }
   else
   {
@@ -120,8 +121,6 @@ int main(void)
 	  Error_Handler();
   }
 
-  if(reset_cause_get() == RESET_CAUSE_EXTERNAL_RESET_PIN_RESET)
-	  DOOR_Open();
 
   /* USER CODE END 2 */
 
@@ -129,11 +128,18 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  DOOR_Process();
 	  if(board_id == BOARD_IS_REED_SWITCH_COLORS)
+	  {
 		  REED_SW_COLORS_Process();
+		  DOOR_Process(ELECTROMAGNET);
+	  }
+
 	  else if(board_id == BOARD_IS_CAP_SENSE_PLAYER)
+	  {
 		  CAP_SENSE_PLAYER_Process();
+		  DOOR_Process(LOCK);
+	  }
+
 
 	  WATCHDOG_Refresh();
     /* USER CODE END WHILE */

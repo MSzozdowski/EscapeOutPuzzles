@@ -17,13 +17,14 @@
 static void REED_SW_COLORS_InitStage(void);
 static void ReedSwCallback(reed_sw* reed_sw);
 
-static reed_sw reed_sw1;
-static reed_sw reed_sw2;
-static reed_sw reed_sw3;
-static reed_sw reed_sw4;
+static reed_sw reed_sw1_yellow;
+static reed_sw reed_sw2_blue;
+static reed_sw reed_sw3_green;
+static reed_sw reed_sw4_red;
 
 static reed_sw_colors_state_t reed_sw_colors_state = REED_SW_COLORS_INIT;
 static reed_sw_colors_init_stage_t reed_sw_colors_init_stage = INIT_STAGE_1;
+
 
 static uint32_t tick;
 bool solved_flag = false;
@@ -33,10 +34,10 @@ void REED_SW_COLORS_Init(void)
 {
 	WS2812_Init(&hspi1);
 
-	REED_SW_Init(&reed_sw1, REED_SW1_GPIO_Port, REED_SW1_Pin, 1);
-	REED_SW_Init(&reed_sw2, REED_SW2_GPIO_Port, REED_SW2_Pin, 2);
-	REED_SW_Init(&reed_sw3, REED_SW3_GPIO_Port, REED_SW3_Pin, 3);
-	REED_SW_Init(&reed_sw4, REED_SW4_GPIO_Port, REED_SW4_Pin, 4);
+	REED_SW_Init(&reed_sw1_yellow, REED_SW1_GPIO_Port, REED_SW1_Pin, 1);
+	REED_SW_Init(&reed_sw2_blue, REED_SW2_GPIO_Port, REED_SW2_Pin, 2);
+	REED_SW_Init(&reed_sw3_green, REED_SW3_GPIO_Port, REED_SW3_Pin, 3);
+	REED_SW_Init(&reed_sw4_red, REED_SW4_GPIO_Port, REED_SW4_Pin, 4);
 
 	ReedSwitchCallBack(ReedSwCallback);
 }
@@ -45,10 +46,10 @@ static void REED_SW_COLORS_InitStage(void)
 {
 	switch (reed_sw_colors_init_stage) {
 		case INIT_STAGE_1:
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw1.reed_sw_id), SEGMENT_END(reed_sw1.reed_sw_id), RED);
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw2.reed_sw_id), SEGMENT_END(reed_sw2.reed_sw_id), GREEN);
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw3.reed_sw_id), SEGMENT_END(reed_sw3.reed_sw_id), BLUE);
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw4.reed_sw_id), SEGMENT_END(reed_sw4.reed_sw_id), YELLOW);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), RED);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), GREEN);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), BLUE);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), YELLOW);
 			WS2812_Update();
 			tick = HAL_GetTick();
 			reed_sw_colors_init_stage = INIT_STAGE_2;
@@ -56,10 +57,10 @@ static void REED_SW_COLORS_InitStage(void)
 		case INIT_STAGE_2:
 			if(HAL_GetTick() - tick > INIT_NEXT_COLOR_DELAY)
 			{
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1.reed_sw_id), SEGMENT_END(reed_sw1.reed_sw_id), BLUE);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2.reed_sw_id), SEGMENT_END(reed_sw2.reed_sw_id), YELLOW);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3.reed_sw_id), SEGMENT_END(reed_sw3.reed_sw_id), RED);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4.reed_sw_id), SEGMENT_END(reed_sw4.reed_sw_id), GREEN);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), BLUE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), YELLOW);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), RED);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), GREEN);
 				WS2812_Update();
 				tick = HAL_GetTick();
 				reed_sw_colors_init_stage = INIT_STAGE_3;
@@ -68,10 +69,10 @@ static void REED_SW_COLORS_InitStage(void)
 		case INIT_STAGE_3:
 			if(HAL_GetTick() - tick > INIT_NEXT_COLOR_DELAY)
 			{
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1.reed_sw_id), SEGMENT_END(reed_sw1.reed_sw_id), YELLOW);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2.reed_sw_id), SEGMENT_END(reed_sw2.reed_sw_id), BLUE);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3.reed_sw_id), SEGMENT_END(reed_sw3.reed_sw_id), GREEN);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4.reed_sw_id), SEGMENT_END(reed_sw4.reed_sw_id), RED);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), YELLOW);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), BLUE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), GREEN);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), RED);
 				WS2812_Update();
 				tick = HAL_GetTick();
 				reed_sw_colors_init_stage = INIT_STAGE_4;
@@ -81,10 +82,10 @@ static void REED_SW_COLORS_InitStage(void)
 			if(HAL_GetTick() - tick > INIT_NEXT_COLOR_DELAY)
 			{
 				WS2812_SetAllOff();
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1.reed_sw_id), SEGMENT_END(reed_sw1.reed_sw_id), GREEN);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2.reed_sw_id), SEGMENT_END(reed_sw2.reed_sw_id), RED);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3.reed_sw_id), SEGMENT_END(reed_sw3.reed_sw_id), YELLOW);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4.reed_sw_id), SEGMENT_END(reed_sw4.reed_sw_id), BLUE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), GREEN);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), RED);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), YELLOW);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), BLUE);
 				WS2812_Update();
 				reed_sw_colors_state = REED_SW_COLORS_GAME;
 			}
@@ -94,10 +95,10 @@ static void REED_SW_COLORS_InitStage(void)
 
 void REED_SW_COLORS_Process(void)
 {
-	REED_SW_Process(&reed_sw1);
-	REED_SW_Process(&reed_sw2);
-	REED_SW_Process(&reed_sw3);
-	REED_SW_Process(&reed_sw4);
+	REED_SW_Process(&reed_sw1_yellow);
+	REED_SW_Process(&reed_sw2_blue);
+	REED_SW_Process(&reed_sw3_green);
+	REED_SW_Process(&reed_sw4_red);
 
 	switch (reed_sw_colors_state) {
 		case REED_SW_COLORS_INIT:
@@ -106,76 +107,119 @@ void REED_SW_COLORS_Process(void)
 		case REED_SW_COLORS_GAME:
 			if(solved_flag)
 			{
+				solved_flag = false;
+				tick = HAL_GetTick();
+				reed_sw_colors_state = REED_SW_COLORS_WAIT_TO_OPEN;
+			}
+			break;
+		case REED_SW_COLORS_WAIT_TO_OPEN:
+			if(HAL_GetTick() - tick > DOOR_OPEN_DELAY)
+			{
+				DOOR_Open();
 				tick = HAL_GetTick();
 				reed_sw_colors_state = REED_SW_COLORS_FINISH;
-				DOOR_Open();
 			}
 			break;
 
 		case REED_SW_COLORS_FINISH:
-			//if(DOOR_GetState() == DOOR_IDLE)
-			//{
-			//	solved_flag = false;
-			//	reed_sw_colors_state = REED_SW_COLORS_INIT;
-			//}
+			if(HAL_GetTick() - tick > NEXT_GAME_DELAY)
+			{
+				reed_sw_colors_state = REED_SW_COLORS_INIT;
+			}
 			break;
 	}
 }
 
-uint32_t current_colors_array[4] = {RED,  RED, RED, RED};
-
+uint32_t prev_colors_array[4] = {0, 0, 0, 0}; //Declared over function for debug purpose
+uint32_t current_colors_array[4] = {0, 0, 0, 0};
 
 static void ReedSwCallback(reed_sw* reed_sw)
 {
-	static const uint32_t colors[COLORS_NUMBER] = {RED, GREEN, BLUE, YELLOW};
+	if(reed_sw_colors_state == REED_SW_COLORS_WAIT_TO_OPEN)
+		return;
+
+	prev_colors_array[0] = WS2812_GetColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id));
+	prev_colors_array[1] = WS2812_GetColor(SEGMENT_START(reed_sw2_blue.reed_sw_id));
+	prev_colors_array[2] = WS2812_GetColor(SEGMENT_START(reed_sw3_green.reed_sw_id));
+	prev_colors_array[3] = WS2812_GetColor(SEGMENT_START(reed_sw4_red.reed_sw_id));
+
 	if(!solved_flag)
 	{
-		if(reed_sw == &reed_sw1)
+		if(reed_sw == &reed_sw1_yellow)
 			{
-				static uint8_t reed1_color = 0;
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1.reed_sw_id), SEGMENT_END(reed_sw1.reed_sw_id), colors[reed1_color++]);
-				reed1_color%=4;
+				uint32_t color = 0x00;
+
+				if(prev_colors_array[0] == RED)
+					color = GREEN;
+				else if(prev_colors_array[0] == GREEN)
+					color = BLUE;
+				else if(prev_colors_array[0] == BLUE)
+					color = YELLOW;
+				else if(prev_colors_array[0] == YELLOW)
+					color = RED;
+
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), color);
 			}
-			else if(reed_sw == &reed_sw2)
+			else if(reed_sw == &reed_sw2_blue)
 			{
-				static uint8_t reed2_color = 0;
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2.reed_sw_id), SEGMENT_END(reed_sw2.reed_sw_id), colors[reed2_color++]);
-				reed2_color%=4;
+				uint32_t color = 0x00;
+
+				if(prev_colors_array[1] == RED)
+					color = GREEN;
+				else if(prev_colors_array[1] == GREEN)
+					color = BLUE;
+				else if(prev_colors_array[1] == BLUE)
+					color = YELLOW;
+				else if(prev_colors_array[1] == YELLOW)
+					color = RED;
+
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), color);
 			}
-			else if(reed_sw == &reed_sw3)
+			else if(reed_sw == &reed_sw3_green)
 			{
-				static uint8_t reed3_color = 0;
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3.reed_sw_id), SEGMENT_END(reed_sw3.reed_sw_id), colors[reed3_color++]);
-				reed3_color%=4;
+				uint32_t color = 0x00;
+
+				if(prev_colors_array[2] == RED)
+					color = GREEN;
+				else if(prev_colors_array[2] == GREEN)
+					color = BLUE;
+				else if(prev_colors_array[2] == BLUE)
+					color = YELLOW;
+				else if(prev_colors_array[2] == YELLOW)
+					color = RED;
+
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), color);
 			}
-			else if(reed_sw == &reed_sw4)
+			else if(reed_sw == &reed_sw4_red)
 			{
-				static uint8_t reed4_color = 0;
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4.reed_sw_id), SEGMENT_END(reed_sw4.reed_sw_id), colors[reed4_color++]);
-				reed4_color%=4;
+				uint32_t color = 0x00;
+
+				if(prev_colors_array[3] == RED)
+					color = GREEN;
+				else if(prev_colors_array[3] == GREEN)
+					color = BLUE;
+				else if(prev_colors_array[3] == BLUE)
+					color = YELLOW;
+				else if(prev_colors_array[3] == YELLOW)
+					color = RED;
+
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), color);
 			}
+
 			WS2812_Update();
 
-			current_colors_array[0] = WS2812_GetColor(SEGMENT_START(reed_sw1.reed_sw_id));
-			current_colors_array[1] = WS2812_GetColor(SEGMENT_START(reed_sw2.reed_sw_id));
-			current_colors_array[2] = WS2812_GetColor(SEGMENT_START(reed_sw3.reed_sw_id));
-			current_colors_array[3] = WS2812_GetColor(SEGMENT_START(reed_sw4.reed_sw_id));
+			current_colors_array[0] = WS2812_GetColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id));
+			current_colors_array[1] = WS2812_GetColor(SEGMENT_START(reed_sw2_blue.reed_sw_id));
+			current_colors_array[2] = WS2812_GetColor(SEGMENT_START(reed_sw3_green.reed_sw_id));
+			current_colors_array[3] = WS2812_GetColor(SEGMENT_START(reed_sw4_red.reed_sw_id));
 
 			if(current_colors_array[0] == YELLOW &&
 					current_colors_array[1] == BLUE &&
-					current_colors_array[2] == RED &&
-					current_colors_array[3] == GREEN)
+					current_colors_array[2] == GREEN &&
+					current_colors_array[3] == RED)
 			{
 				solved_flag = true;
 			}
-
-//			if(WS2812_GetColor(SEGMENT_START(reed_sw1.reed_sw_id)) == YELLOW
-//					&& WS2812_GetColor(SEGMENT_START(reed_sw2.reed_sw_id)) == BLUE
-//					&& WS2812_GetColor(SEGMENT_START(reed_sw3.reed_sw_id)) == RED
-//					&& WS2812_GetColor(SEGMENT_START(reed_sw4.reed_sw_id)) == GREEN)
-//			{
-//				solved_flag = true;
-//			}
 	}
 	HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
 }

@@ -8,51 +8,99 @@
 #include "main.h"
 #include "app/door.h"
 #include "stdbool.h"
+#include "app/board_id.h"
 
 static void RELAY_On(void);
 static void RELAY_Off(void);
+static void DOOR_ElectromagnetProcess(void);
+static void DOOR_LockProcess(void);
 
-static door_state_t door_state = DOOR_IDLE;
+static electromagnet_state_t electromagnet_state = ELECTROMAGNET_IDLE;
+static lock_state_t lock_state = LOCK_IDLE;
 static bool request_to_open = false;
 static bool last_open_failed = false;
 static uint32_t last_tick;
 
-void DOOR_Process(void)
+void DOOR_Process(door_type_t door_type)
+{
+	switch (door_type) {
+		case ELECTROMAGNET:
+			DOOR_ElectromagnetProcess();
+			break;
+
+		case LOCK:
+			DOOR_LockProcess();
+			break;
+	}
+}
+
+static void DOOR_ElectromagnetProcess(void)
+{
+	switch (electromagnet_state) {
+		case ELECTROMAGNET_IDLE:
+			if(request_to_open == true)
+			{
+				RELAY_On();
+				electromagnet_state = ELECTROMAGNET_OPEN;
+				last_tick = HAL_GetTick();
+			}
+			break;
+
+		case ELECTROMAGNET_OPEN:
+			if(HAL_GetTick() - last_tick > ELETROMAGNET_OPEN_TIME)
+			{
+				RELAY_Off();
+				electromagnet_state = ELECTROMAGNET_WAIT_FOR_NEXT_OPEN;
+				last_tick = HAL_GetTick();
+			}
+		break;
+
+		case ELECTROMAGNET_WAIT_FOR_NEXT_OPEN:
+			if(HAL_GetTick() - last_tick > ELECTROMAGNET_NEXT_DOOR_OPEN_TIME)
+			{
+				request_to_open = false;
+				electromagnet_state = ELECTROMAGNET_IDLE;
+			}
+		break;
+	}
+}
+
+static void DOOR_LockProcess(void)
 {
 	static uint8_t retry_counter = 0;
-	switch (door_state) {
-		case DOOR_IDLE:
+	switch (lock_state) {
+		case LOCK_IDLE:
 			if(request_to_open)
 			{
-				door_state = START_OPENING;
+				lock_state = LOCK_START_OPENING;
 				RELAY_On();
 				last_tick = HAL_GetTick();
 			}
 			break;
 
-		case START_OPENING:
-			if(HAL_GetTick() - last_tick > DOOR_OPEN_TIME)
+		case LOCK_START_OPENING:
+			if(HAL_GetTick() - last_tick > LOCK_OPEN_TIME)
 			{
-				door_state = CHECK_OPEN_STATUS;
+				lock_state = LOCK_CHECK_OPEN_STATUS;
 				RELAY_Off();
 				last_tick = HAL_GetTick();
 			}
 		break;
 
-		case CHECK_OPEN_STATUS:
-			if(HAL_GetTick() - last_tick > DOOR_DEBOUNCE_TIME)
+		case LOCK_CHECK_OPEN_STATUS:
+			if(HAL_GetTick() - last_tick > LOCK_DEBOUNCE_TIME)
 			{
 				if(DOOR_IsOpen() == true)
 				{
-					door_state = STOP_OPENING;
+					lock_state = LOCK_STOP_OPENING;
 				}
 				else
 				{
 					if(retry_counter++ < 3)
-						door_state = WAIT_FOR_NEXT_OPEN;
+						lock_state = LOCK_WAIT_FOR_NEXT_OPEN;
 					else
 					{
-						door_state = STOP_OPENING;
+						lock_state = LOCK_STOP_OPENING;
 						last_open_failed = true;
 					}
 
@@ -61,17 +109,17 @@ void DOOR_Process(void)
 			}
 			break;
 
-		case WAIT_FOR_NEXT_OPEN:
-			if(HAL_GetTick() - last_tick > DOOR_RETRY_DELAY)
+		case LOCK_WAIT_FOR_NEXT_OPEN:
+			if(HAL_GetTick() - last_tick > LOCK_RETRY_DELAY)
 			{
-				door_state = DOOR_IDLE;
+				lock_state = LOCK_IDLE;
 			}
 			break;
 
-		case STOP_OPENING:
-			if(HAL_GetTick() - last_tick > DOOR_NEXT_TRY_TIME)
+		case LOCK_STOP_OPENING:
+			if(HAL_GetTick() - last_tick > LOCK_NEXT_TRY_TIME)
 			{
-				door_state = DOOR_IDLE;
+				lock_state = LOCK_IDLE;
 				retry_counter = 0;
 				request_to_open = false;
 				last_open_failed = false;
@@ -105,10 +153,29 @@ void DOOR_Open(void)
 
 static void RELAY_On(void)
 {
-	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY2_Pin, GPIO_PIN_SET);
+	board_id_t board_id = BOARD_ID_GetBoardID();
+
+	if(board_id == BOARD_IS_REED_SWITCH_COLORS)
+	{
+		HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_SET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(RELAY2_GPIO_Port, RELAY2_Pin, GPIO_PIN_SET);
+	}
+
 }
 
 static void RELAY_Off(void)
 {
-	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY2_Pin, GPIO_PIN_RESET);
+	board_id_t board_id = BOARD_ID_GetBoardID();
+
+	if(board_id == BOARD_IS_REED_SWITCH_COLORS)
+	{
+		HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, GPIO_PIN_RESET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(RELAY2_GPIO_Port, RELAY2_Pin, GPIO_PIN_RESET);
+	}
 }
