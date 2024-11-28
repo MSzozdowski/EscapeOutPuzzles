@@ -122,6 +122,9 @@ void REED_SW_COLORS_Process(void)
 	}
 }
 
+uint32_t current_colors_array[4] = {RED,  RED, RED, RED};
+
+
 static void ReedSwCallback(reed_sw* reed_sw)
 {
 	static const uint32_t colors[COLORS_NUMBER] = {RED, GREEN, BLUE, YELLOW};
@@ -153,13 +156,26 @@ static void ReedSwCallback(reed_sw* reed_sw)
 			}
 			WS2812_Update();
 
-			if(WS2812_GetColor(SEGMENT_START(reed_sw1.reed_sw_id)) == YELLOW
-					&& WS2812_GetColor(SEGMENT_START(reed_sw2.reed_sw_id)) == BLUE
-					&& WS2812_GetColor(SEGMENT_START(reed_sw3.reed_sw_id)) == RED
-					&& WS2812_GetColor(SEGMENT_START(reed_sw4.reed_sw_id)) == GREEN)
+			current_colors_array[0] = WS2812_GetColor(SEGMENT_START(reed_sw1.reed_sw_id));
+			current_colors_array[1] = WS2812_GetColor(SEGMENT_START(reed_sw2.reed_sw_id));
+			current_colors_array[2] = WS2812_GetColor(SEGMENT_START(reed_sw3.reed_sw_id));
+			current_colors_array[3] = WS2812_GetColor(SEGMENT_START(reed_sw4.reed_sw_id));
+
+			if(current_colors_array[0] == YELLOW &&
+					current_colors_array[1] == BLUE &&
+					current_colors_array[2] == RED &&
+					current_colors_array[3] == GREEN)
 			{
 				solved_flag = true;
 			}
+
+//			if(WS2812_GetColor(SEGMENT_START(reed_sw1.reed_sw_id)) == YELLOW
+//					&& WS2812_GetColor(SEGMENT_START(reed_sw2.reed_sw_id)) == BLUE
+//					&& WS2812_GetColor(SEGMENT_START(reed_sw3.reed_sw_id)) == RED
+//					&& WS2812_GetColor(SEGMENT_START(reed_sw4.reed_sw_id)) == GREEN)
+//			{
+//				solved_flag = true;
+//			}
 	}
 	HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
 }

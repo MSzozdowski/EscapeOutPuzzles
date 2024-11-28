@@ -18,10 +18,10 @@
 
 #define COLORS_NUMBER 4
 
-#define RED 0x02F0000
-#define GREEN 0x000F00
-#define BLUE 0x00000F
-#define YELLOW 0x3F0A00
+#define RED 0xFF0000
+#define GREEN 0x00FF00
+#define BLUE 0x0000FF
+#define YELLOW 0xFFD700
 
 typedef enum
 {

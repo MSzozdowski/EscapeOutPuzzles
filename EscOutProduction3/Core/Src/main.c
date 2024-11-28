@@ -101,6 +101,7 @@ int main(void)
   MX_ADC1_Init();
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
+  __HAL_DBGMCU_FREEZE_IWDG();
   BOARD_ID_Init(&hadc1, ADC_CHANNEL_1);
   board_id = BOARD_ID_GetBoardID();
   if(board_id == BOARD_IS_REED_SWITCH_COLORS)
