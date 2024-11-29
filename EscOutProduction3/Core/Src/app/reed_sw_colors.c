@@ -47,9 +47,9 @@ static void REED_SW_COLORS_InitStage(void)
 	switch (reed_sw_colors_init_stage) {
 		case INIT_STAGE_1:
 			WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), RED);
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), GREEN);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), WHITE);
 			WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), BLUE);
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), YELLOW);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), BRONZE);
 			WS2812_Update();
 			tick = HAL_GetTick();
 			reed_sw_colors_init_stage = INIT_STAGE_2;
@@ -57,9 +57,9 @@ static void REED_SW_COLORS_InitStage(void)
 		case INIT_STAGE_2:
 			if(HAL_GetTick() - tick > INIT_NEXT_COLOR_DELAY)
 			{
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), BLUE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), PURPLE);
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), YELLOW);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), RED);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), PINK);
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), GREEN);
 				WS2812_Update();
 				tick = HAL_GetTick();
@@ -69,10 +69,10 @@ static void REED_SW_COLORS_InitStage(void)
 		case INIT_STAGE_3:
 			if(HAL_GetTick() - tick > INIT_NEXT_COLOR_DELAY)
 			{
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), YELLOW);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), BLUE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), PURPLE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), RED);
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), GREEN);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), RED);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), WHITE);
 				WS2812_Update();
 				tick = HAL_GetTick();
 				reed_sw_colors_init_stage = INIT_STAGE_4;
@@ -82,10 +82,10 @@ static void REED_SW_COLORS_InitStage(void)
 			if(HAL_GetTick() - tick > INIT_NEXT_COLOR_DELAY)
 			{
 				WS2812_SetAllOff();
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), GREEN);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), RED);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), YELLOW);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), BLUE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), WHITE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), PINK);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), BRONZE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), PURPLE);
 				WS2812_Update();
 				reed_sw_colors_state = REED_SW_COLORS_GAME;
 			}
@@ -113,7 +113,7 @@ void REED_SW_COLORS_Process(void)
 			}
 			break;
 		case REED_SW_COLORS_WAIT_TO_OPEN:
-			if(HAL_GetTick() - tick > DOOR_OPEN_DELAY)
+			if(HAL_GetTick() - tick > DOOR_OPEN_DELAY_1)
 			{
 				DOOR_Open();
 				tick = HAL_GetTick();
@@ -150,12 +150,20 @@ static void ReedSwCallback(reed_sw* reed_sw)
 				uint32_t color = 0x00;
 
 				if(prev_colors_array[0] == RED)
+					color = WHITE;
+				else if(prev_colors_array[0] == WHITE)
 					color = GREEN;
 				else if(prev_colors_array[0] == GREEN)
+					color = PINK;
+				else if(prev_colors_array[0] == PINK)
 					color = BLUE;
 				else if(prev_colors_array[0] == BLUE)
+					color = BRONZE;
+				else if(prev_colors_array[0] == BRONZE)
 					color = YELLOW;
 				else if(prev_colors_array[0] == YELLOW)
+					color = PURPLE;
+				else if(prev_colors_array[0] == PURPLE)
 					color = RED;
 
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), color);
@@ -165,14 +173,21 @@ static void ReedSwCallback(reed_sw* reed_sw)
 				uint32_t color = 0x00;
 
 				if(prev_colors_array[1] == RED)
+					color = WHITE;
+				else if(prev_colors_array[1] == WHITE)
 					color = GREEN;
 				else if(prev_colors_array[1] == GREEN)
+					color = PINK;
+				else if(prev_colors_array[1] == PINK)
 					color = BLUE;
 				else if(prev_colors_array[1] == BLUE)
+					color = BRONZE;
+				else if(prev_colors_array[1] == BRONZE)
 					color = YELLOW;
 				else if(prev_colors_array[1] == YELLOW)
+					color = PURPLE;
+				else if(prev_colors_array[1] == PURPLE)
 					color = RED;
-
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), color);
 			}
 			else if(reed_sw == &reed_sw3_green)
@@ -180,12 +195,20 @@ static void ReedSwCallback(reed_sw* reed_sw)
 				uint32_t color = 0x00;
 
 				if(prev_colors_array[2] == RED)
+					color = WHITE;
+				else if(prev_colors_array[2] == WHITE)
 					color = GREEN;
 				else if(prev_colors_array[2] == GREEN)
+					color = PINK;
+				else if(prev_colors_array[2] == PINK)
 					color = BLUE;
 				else if(prev_colors_array[2] == BLUE)
+					color = BRONZE;
+				else if(prev_colors_array[2] == BRONZE)
 					color = YELLOW;
 				else if(prev_colors_array[2] == YELLOW)
+					color = PURPLE;
+				else if(prev_colors_array[2] == PURPLE)
 					color = RED;
 
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), color);
@@ -195,12 +218,20 @@ static void ReedSwCallback(reed_sw* reed_sw)
 				uint32_t color = 0x00;
 
 				if(prev_colors_array[3] == RED)
+					color = WHITE;
+				else if(prev_colors_array[3] == WHITE)
 					color = GREEN;
 				else if(prev_colors_array[3] == GREEN)
+					color = PINK;
+				else if(prev_colors_array[3] == PINK)
 					color = BLUE;
 				else if(prev_colors_array[3] == BLUE)
+					color = BRONZE;
+				else if(prev_colors_array[3] == BRONZE)
 					color = YELLOW;
 				else if(prev_colors_array[3] == YELLOW)
+					color = PURPLE;
+				else if(prev_colors_array[3] == PURPLE)
 					color = RED;
 
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), color);
@@ -213,10 +244,40 @@ static void ReedSwCallback(reed_sw* reed_sw)
 			current_colors_array[2] = WS2812_GetColor(SEGMENT_START(reed_sw3_green.reed_sw_id));
 			current_colors_array[3] = WS2812_GetColor(SEGMENT_START(reed_sw4_red.reed_sw_id));
 
-			if(current_colors_array[0] == YELLOW &&
-					current_colors_array[1] == BLUE &&
-					current_colors_array[2] == GREEN &&
-					current_colors_array[3] == RED)
+			uint8_t red_used = 0;
+			uint8_t blue_used = 0;
+			uint8_t green_used = 0;
+			uint8_t yellow_used = 0;
+
+			uint32_t win_colors[4] = {RED, BLUE, GREEN, YELLOW};
+
+			for(uint8_t i = 0; i < 4; i++)
+			{
+				for(uint8_t j = 0; j < 4; j++)
+				{
+					if(current_colors_array[i] == win_colors[j])
+					{
+						if(win_colors[j] == RED)
+						{
+							red_used++;
+						}
+						else if(win_colors[j] == BLUE)
+						{
+							blue_used++;
+						}
+						else if(win_colors[j] == GREEN)
+						{
+							green_used++;
+						}
+						else if(win_colors[j] == YELLOW)
+						{
+							yellow_used++;
+						}
+					}
+
+				}
+			}
+			if(red_used == 1 && blue_used == 1 && green_used == 1 && yellow_used == 1)
 			{
 				solved_flag = true;
 			}

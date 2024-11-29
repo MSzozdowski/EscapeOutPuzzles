@@ -9,7 +9,7 @@
 #define INC_APP_REED_SW_COLORS_H_
 
 #define INIT_NEXT_COLOR_DELAY 500
-#define DOOR_OPEN_DELAY 1000
+#define DOOR_OPEN_DELAY_1 1000
 #define NEXT_GAME_DELAY 5000
 
 #define NUMBER_OF_REED_SW 4
@@ -20,10 +20,14 @@
 
 #define COLORS_NUMBER 4
 
-#define RED 0xFF0000
-#define GREEN 0x00FF00
-#define BLUE 0x0000FF
-#define YELLOW 0xFFD700
+#define RED 	0xFF0000
+#define GREEN 	0x00FF00
+#define BLUE 	0x0000FF
+#define YELLOW 	0xFFD700
+#define WHITE	0xFFFFFF
+#define PINK 	0xFC0FC0
+#define BRONZE	0x6C3C0C
+#define PURPLE 	0xB803FF
 
 typedef enum
 {
