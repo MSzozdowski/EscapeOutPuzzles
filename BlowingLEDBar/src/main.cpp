@@ -31,7 +31,7 @@ void setup()
 }
 
 static unsigned long currentMillis = 0;
-uint16_t progress = 0;
+int16_t progress = 0;
 uint16_t mapped_progress = 0;
 void loop()
 {
@@ -86,7 +86,10 @@ void loop()
       currentMillis = millis();
       if(MICROPHONE_GetAverage() < MICROPHONE_THRESHOLD_VALUE)
       {
-        progress-=2;
+        progress--;
+        if(progress < 0)
+          progress = 0;
+        
         mapped_progress = map(progress, ZERO_PERCENT, ONE_HUNDREAD_PERCENT, 0, NO_OF_LEDS);
         LED_STRIP_SetColor(0, mapped_progress, BLUE);
         Serial.print("Mapped progress: ");
