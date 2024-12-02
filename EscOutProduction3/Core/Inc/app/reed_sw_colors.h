@@ -25,9 +25,9 @@
 #define BLUE 	0x0000FF
 #define YELLOW 	0xFFD700
 #define WHITE	0xFFFFFF
-#define PINK 	0xFC0FC0
+#define PINK 	0xF769AC
 #define BRONZE	0x6C3C0C
-#define PURPLE 	0xB803FF
+#define PURPLE 	0x52057B
 
 typedef enum
 {
