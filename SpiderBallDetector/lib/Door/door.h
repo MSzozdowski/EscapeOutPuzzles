@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define DOOR_PIN 3
+#define DOOR_PIN 12
 #define DOOR_OPEN_TIME 1500
 #define DOOR_NEXT_OPEN_TIME 1000
 

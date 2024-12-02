@@ -8,6 +8,7 @@ static unsigned long last_tick = 0;
 void DOOR_Init(void)
 {
     pinMode(OUTPUT, DOOR_PIN);
+    digitalWrite(DOOR_PIN, HIGH);
 }
 
 void DOOR_Process(void)
@@ -17,7 +18,7 @@ void DOOR_Process(void)
     case DOOR_IDLE:
         if (request_to_open)
         {
-            digitalWrite(DOOR_PIN, HIGH);
+            digitalWrite(DOOR_PIN, LOW);
             last_tick = millis();
             door_state = DOOR_OPEN;
             Serial.println("DOOR OPEN");
@@ -26,7 +27,7 @@ void DOOR_Process(void)
     case DOOR_OPEN:
         if (millis() - last_tick > DOOR_OPEN_TIME)
         {
-            digitalWrite(DOOR_PIN, LOW);
+            digitalWrite(DOOR_PIN, HIGH);
             last_tick = millis();
             door_state = DOOR_WAIT;
             Serial.println("DOOR CLOSE");

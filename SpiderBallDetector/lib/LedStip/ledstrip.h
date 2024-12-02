@@ -3,8 +3,8 @@
 
 #include "stdint.h"
 
-#define LED_STRIP_PIN 3
-#define NO_OF_LEDS  76
+#define LED_STRIP_PIN 11
+#define NO_OF_LEDS  11
 
 #define RED 0xFF0000
 #define GREEN 0x00FF00
