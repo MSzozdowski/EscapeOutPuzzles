@@ -48,8 +48,8 @@ static void REED_SW_COLORS_InitStage(void)
 		case INIT_STAGE_1:
 			WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), RED);
 			WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), WHITE);
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), BLUE);
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), BRONZE);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), BRONZE);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), BLUE);
 			WS2812_Update();
 			tick = HAL_GetTick();
 			reed_sw_colors_init_stage = INIT_STAGE_2;
@@ -72,7 +72,7 @@ static void REED_SW_COLORS_InitStage(void)
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), PURPLE);
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), RED);
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), GREEN);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), WHITE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), BLUE);
 				WS2812_Update();
 				tick = HAL_GetTick();
 				reed_sw_colors_init_stage = INIT_STAGE_4;
@@ -83,9 +83,9 @@ static void REED_SW_COLORS_InitStage(void)
 			{
 				WS2812_SetAllOff();
 				WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), WHITE);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), PINK);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), BRONZE);
-				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), PURPLE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), WHITE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), WHITE);
+				WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), WHITE);
 				WS2812_Update();
 				reed_sw_colors_state = REED_SW_COLORS_GAME;
 			}
