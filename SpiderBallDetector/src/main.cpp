@@ -4,7 +4,7 @@
 
 #define RESET_TIME 5000
 #define DOOR_DELAY_TIME 1000
-#define LAST_SHOT_TIME 1000
+#define LAST_SHOT_TIME 2000
 #define SENSOR_THRESHOLD 50
 #define SERIAL_DISPLAY_TIME 2000
 #define ARRAY_SIZE 6
@@ -40,7 +40,7 @@ void setup()
   LED_STRIP_SetColor(0, NO_OF_LEDS, RED);
 }
 
-bool debug_on = false;
+bool debug_on = true;
 static uint8_t s1, s2, s3, s4, s5, s6, s7, s8;
 puzzle_state_t puzzle_state = SENSORS_WAIT_FOR_BALL;
 
