@@ -51,7 +51,7 @@ static void BUTTON_LEDBlink(button_t* button)
 			break;
 
 		case 1: //Set LED off after button blink time, if button will be pressed before LED is off then register a callback
-			if((HAL_GetTick() - button->led_last_tick) > BUTTON_BLINK_TIME)
+			if((HAL_GetTick() - button->led_last_tick) > BUTTON_BLINK_TIME_ON)
 			{
 				BUTTON_LED_SetPinState(button, LED_OFF);
 				button->led_last_tick = HAL_GetTick();
@@ -61,7 +61,7 @@ static void BUTTON_LEDBlink(button_t* button)
 			break;
 
 		case 2: //Wait some time to next blink
-			if((HAL_GetTick() - button->led_last_tick) > BUTTON_BLINK_TIME)
+			if((HAL_GetTick() - button->led_last_tick) > BUTTON_BLINK_TIME_OFF)
 			{
 				BUTTON_LED_SetState(button, BUTTON_LED_IDLE);
 				button->button_led_blink_stage = 0;

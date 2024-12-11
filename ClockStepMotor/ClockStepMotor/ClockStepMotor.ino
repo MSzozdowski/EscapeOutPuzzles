@@ -5,17 +5,21 @@
 #define REED_SW_DETECT_MOVE_PIN 7
 #define RELAY 8
 #define SERVO 9
+#define MOSFET 10
 
 #define SERWO_STOP_VALUE 93
-#define SERWO_GO_VALUE 91
-#define SERWO_START_STOP_DELAY 20
+#define SERWO_GO_VALUE 91  
+
+#define SERWO_START_DELAY 100
+#define SERWO_STOP_DELAY 100
 
 #define DEBUG_SENS_DISP_TIME 1500
 #define CONFIRMATION_TIME 5000
 
 //Functions
 void ServoProcess(void);
-
+void TurnOnServo(void);
+void TurnOffServo(void);
 //Typedefs
 typedef enum
 {
@@ -54,6 +58,8 @@ void setup() {
   pinMode(REED_SW_DETECT_MOVE_PIN, INPUT_PULLUP);
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(RELAY, OUTPUT);
+  pinMode(MOSFET, OUTPUT);
+  digitalWrite(MOSFET, HIGH);
   digitalWrite(RELAY, HIGH);
   myservo.attach(SERVO);
   Serial.begin(9600);
@@ -110,8 +116,9 @@ void loop() {
       digitalWrite(RELAY, LOW);
       delay(1000);
       digitalWrite(RELAY, HIGH);
+      TurnOnServo();
       myservo.write(SERWO_GO_VALUE);
-      delay(4500);
+      delay(3500);
       puzzle_state = PUZZLE_WAIT_FOR_SENS;
       break;
   }
@@ -124,7 +131,7 @@ void ServoProcess(void)
   {
     switch (serwo_state) {
     case SERWO_STOP:
-    if(millis() - tick_servo > SERWO_START_STOP_DELAY)
+    if(millis() - tick_servo > SERWO_STOP_DELAY)
     {
       myservo.write(SERWO_STOP_VALUE);
       tick_servo = millis();
@@ -134,9 +141,10 @@ void ServoProcess(void)
     break;
 
     case SERWO_GO:
-      if(millis() - tick_servo > SERWO_START_STOP_DELAY)
+      if(millis() - tick_servo > SERWO_START_DELAY)
       {
         myservo.write(SERWO_GO_VALUE);
+        TurnOnServo();
         tick_servo = millis();
         serwo_state = SERWO_STOP;
       }
@@ -145,6 +153,16 @@ void ServoProcess(void)
   }
   else
   {
-    myservo.write(SERWO_STOP_VALUE);
+    TurnOffServo();
+    //myservo.write(SERWO_STOP_VALUE);
   }
+}
+
+void TurnOnServo(void)
+{
+  digitalWrite(MOSFET, HIGH);
+}
+void TurnOffServo(void)
+{
+  digitalWrite(MOSFET, LOW);
 }

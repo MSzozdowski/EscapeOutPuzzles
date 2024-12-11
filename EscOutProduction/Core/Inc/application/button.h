@@ -15,9 +15,11 @@
 #define NEXT_PRESS_TIME 200
 
 //Button LEDs defines
-#define BUTTON_BLINK_TIME 750
+#define BUTTON_BLINK_TIME_ON 1000
+#define BUTTON_BLINK_TIME_OFF 500
 #define BUTTON_FAST_BLINK_TIME 350
 #define BUTTON_BLINK_NEXT_BLINK 500
+
 
 typedef enum
 {
