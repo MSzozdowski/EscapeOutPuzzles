@@ -7,7 +7,7 @@
 #define SERVO 9
 #define MOSFET 10
 
-#define SERWO_STOP_VALUE 93
+#define SERWO_STOP_VALUE 92
 #define SERWO_GO_VALUE 91  
 
 #define SERWO_START_DELAY 100
