@@ -170,7 +170,7 @@ void AddToCounter(void)
 	if(switch_game_state == SWITCH_GAME_PROCESS)
 	{
 		BUZZER_Go(TBUZ_200, TICK_0, BUZZ_DEL_0, BUZZER_FREQ_HIGH);
-		if(positive_press_counter++ >= 5)
+		if(positive_press_counter++ >= 8)
 		{
 			switch_game_state = SWITCH_GAME_FINISH;
 			positive_press_counter = 0;
