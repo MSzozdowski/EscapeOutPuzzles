@@ -32,3 +32,17 @@ void LEDS_LedsToggleAll(void)
     for(uint8_t i = 0; i < LED_NUMBER; i++)
         LEDS_LedToggle(first_led_no++);
 }
+
+void LEDS_LedsAllOn(void)
+{
+    uint8_t first_led_no = LED6;
+    for(uint8_t i = 0; i < LED_NUMBER; i++)
+        LEDS_LedOn(first_led_no++);
+}
+
+void LEDS_LedsAllOff(void)
+{
+    uint8_t first_led_no = LED6;
+    for(uint8_t i = 0; i < LED_NUMBER; i++)
+        LEDS_LedOff(first_led_no++);
+}
