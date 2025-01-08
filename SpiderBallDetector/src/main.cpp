@@ -7,7 +7,7 @@
 #define LAST_SHOT_TIME 2000
 #define SENSOR_THRESHOLD 50
 #define SERIAL_DISPLAY_TIME 2000
-#define ARRAY_SIZE 6
+#define ARRAY_SIZE 4
 
 typedef enum
 {
@@ -40,21 +40,23 @@ void setup()
   LED_STRIP_SetColor(0, NO_OF_LEDS, RED);
 }
 
-bool debug_on = true;
+bool debug_on = false;
 static uint8_t s1, s2, s3, s4, s5, s6, s7, s8;
 puzzle_state_t puzzle_state = SENSORS_WAIT_FOR_BALL;
 
 unsigned long tick_puzzle = 0;
 unsigned long tick_serial = 0;
-hole_type_t hole_game_current[ARRAY_SIZE] = {NONE, NONE, NONE, NONE, NONE, NONE};
-hole_type_t solution_array[ARRAY_SIZE] = {LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT_DOWN, RIGHT_UP, LEFT_UP};
+hole_type_t hole_game_current[ARRAY_SIZE] = {NONE, NONE, NONE, NONE};
+hole_type_t solution_array[ARRAY_SIZE] = {LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT_DOWN};
+uint8_t hole_index = 0;
+
 void loop()
 {
   DOOR_Process();
   switch (puzzle_state)
   {
   case SENSORS_WAIT_FOR_BALL:
-    static uint8_t hole_index = 0;
+    
     static bool throw_good = false;
     s1 = analogRead(A0);
     s2 = analogRead(A1);
@@ -80,12 +82,6 @@ void loop()
           hole_index = 0;
           hole_game_current[hole_index++] = LEFT_UP;
           display_current_array();
-        }
-        else if(hole_index == 5)
-        {
-          hole_game_current[hole_index++] = LEFT_UP;
-          display_current_array();
-          puzzle_state = SENSORS_WAIT_FOR_DOORS_OPEN;
         }
         else
         {
@@ -118,6 +114,7 @@ void loop()
         {
           hole_game_current[hole_index++] = RIGHT_DOWN;
           display_current_array();
+          puzzle_state = SENSORS_WAIT_FOR_DOORS_OPEN;
         }
         else
         {
@@ -131,11 +128,6 @@ void loop()
         Serial.println("Prawy górny detected!"); // Prawy górny - zielony
         tick_puzzle = millis();
         if(hole_index == 2)
-        {
-          hole_game_current[hole_index++] = RIGHT_UP;
-          display_current_array();
-        }
-        else if(hole_index == 4)
         {
           hole_game_current[hole_index++] = RIGHT_UP;
           display_current_array();
@@ -201,6 +193,9 @@ void loop()
     {
       LED_STRIP_SetColor(0, NO_OF_LEDS, RED);
       puzzle_state = SENSORS_WAIT_FOR_BALL;
+      hole_index = false;
+      clear_current_array();
+      display_current_array();
     }
   break;
 
@@ -234,7 +229,7 @@ void led_strip_short_blink(void)
 {
   digitalWrite(LED_BUILTIN, LOW);
   LED_STRIP_SetColor(0, NO_OF_LEDS, OFF);
-  delay(200);
+  delay(500);
   digitalWrite(LED_BUILTIN, HIGH);
   LED_STRIP_SetColor(0, NO_OF_LEDS, RED);
 }
