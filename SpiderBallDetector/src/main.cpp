@@ -7,11 +7,13 @@
 #define LAST_SHOT_TIME 2000
 #define SENSOR_THRESHOLD 50
 #define SERIAL_DISPLAY_TIME 2000
+#define SOLUTION_DELAY 1500
 #define ARRAY_SIZE 4
 
 typedef enum
 {
   SENSORS_WAIT_FOR_BALL,
+  SENSORS_DELAY_AFTER_SOLUTION,
   SENSORS_WAIT_FOR_DOORS_OPEN,
   SENSOR_WAIT_FOR_RESET
 } puzzle_state_t;
@@ -25,9 +27,11 @@ typedef enum
   RIGHT_DOWN
 } hole_type_t;
 
+
+
 void display_current_array(void);
 void clear_current_array(void);
-void led_strip_short_blink(void);
+void led_strip_update(uint8_t stage);
 
 void setup()
 {
@@ -46,8 +50,6 @@ puzzle_state_t puzzle_state = SENSORS_WAIT_FOR_BALL;
 
 unsigned long tick_puzzle = 0;
 unsigned long tick_serial = 0;
-hole_type_t hole_game_current[ARRAY_SIZE] = {NONE, NONE, NONE, NONE};
-hole_type_t solution_array[ARRAY_SIZE] = {LEFT_UP, LEFT_DOWN, RIGHT_UP, RIGHT_DOWN};
 uint8_t hole_index = 0;
 
 void loop()
@@ -56,8 +58,6 @@ void loop()
   switch (puzzle_state)
   {
   case SENSORS_WAIT_FOR_BALL:
-    
-    static bool throw_good = false;
     s1 = analogRead(A0);
     s2 = analogRead(A1);
     s3 = analogRead(A2);
@@ -68,83 +68,34 @@ void loop()
     s8 = analogRead(A7);
     if (millis() - tick_puzzle > LAST_SHOT_TIME)
     {
-      if (s1 < SENSOR_THRESHOLD || s2 < SENSOR_THRESHOLD) // Lewy górny - czerwony
+      if ((s1 < SENSOR_THRESHOLD || s2 < SENSOR_THRESHOLD) && hole_index == 0) // Lewy górny - czerwony
       {
         Serial.println("Lewy górny detected!");
         tick_puzzle = millis();
-        if(hole_index == 0)
-        {
-          hole_game_current[hole_index++] = LEFT_UP;
-          display_current_array();
-        }
-        else if(hole_index == 1)
-        {
-          hole_index = 0;
-          hole_game_current[hole_index++] = LEFT_UP;
-          display_current_array();
-        }
-        else
-        {
-          throw_good = false;
-        }
-        led_strip_short_blink();
+        led_strip_update(0);
+        hole_index = 1;
       }
-
-      if (s3 < SENSOR_THRESHOLD || s4 < SENSOR_THRESHOLD)
+      else if ((s3 < SENSOR_THRESHOLD || s4 < SENSOR_THRESHOLD) && hole_index == 1)
       {
-        Serial.println("Lewy dolny detected!"); // Lewy dolny - niebieski
+        Serial.println("Lewy dolny detected!");                               // Lewy dolny - niebieski
         tick_puzzle = millis();
-        if(hole_index == 1)
-        {
-          hole_game_current[hole_index++] = LEFT_DOWN;
-          display_current_array();
-        }
-        else
-        {
-          throw_good = false;
-        }
-        led_strip_short_blink();
+        led_strip_update(1);
+        hole_index = 2;
       }
-
-      if (s5 < SENSOR_THRESHOLD || s6 < SENSOR_THRESHOLD)
+      else if ((s7 < SENSOR_THRESHOLD || s8 < SENSOR_THRESHOLD) && hole_index == 2)
       {
-        Serial.println("Prawy dolny detected!"); // Prawy dolny - zółty
+        Serial.println("Prawy górny detected!");                              // Prawy górny - żółty
         tick_puzzle = millis();
-        if(hole_index == 3)
-        {
-          hole_game_current[hole_index++] = RIGHT_DOWN;
-          display_current_array();
-          puzzle_state = SENSORS_WAIT_FOR_DOORS_OPEN;
-        }
-        else
-        {
-          throw_good = false;
-        }
-        led_strip_short_blink();
+        led_strip_update(2);
+        hole_index = 3;
       }
-
-      if (s7 < SENSOR_THRESHOLD || s8 < SENSOR_THRESHOLD)
+      else if ((s5 < SENSOR_THRESHOLD || s6 < SENSOR_THRESHOLD) && hole_index == 3)
       {
-        Serial.println("Prawy górny detected!"); // Prawy górny - zielony
+        Serial.println("Prawy dolny detected!");                              // Prawy dolny - zielony
         tick_puzzle = millis();
-        if(hole_index == 2)
-        {
-          hole_game_current[hole_index++] = RIGHT_UP;
-          display_current_array();
-        }
-        else
-        {
-          throw_good = false;
-        }
-        led_strip_short_blink();
-      }
-      
-      if(throw_good == false)
-      {
-        throw_good = true;
+        led_strip_update(3);
         hole_index = 0;
-        clear_current_array();
-        display_current_array();
+        puzzle_state = SENSORS_DELAY_AFTER_SOLUTION;
       }
     }
     if(millis() - tick_serial > SERIAL_DISPLAY_TIME && debug_on == true)
@@ -177,10 +128,19 @@ void loop()
     }
     break;
 
+  case SENSORS_DELAY_AFTER_SOLUTION:
+    if(millis() - tick_puzzle > SOLUTION_DELAY)
+    {
+      LED_STRIP_SetColor(0, NO_OF_LEDS, GREEN);
+      LED_STRIP_Update();
+      tick_puzzle = millis();
+      puzzle_state = SENSORS_WAIT_FOR_DOORS_OPEN;
+    }
+  break;
+
   case SENSORS_WAIT_FOR_DOORS_OPEN:
     if(millis() - tick_puzzle > DOOR_DELAY_TIME)
     {
-      LED_STRIP_SetColor(0, NO_OF_LEDS, GREEN);
       tick_puzzle = millis();
       Serial.println("Solved!");
       DOOR_Open();
@@ -191,11 +151,9 @@ void loop()
   case SENSOR_WAIT_FOR_RESET:
     if(millis() - tick_puzzle > RESET_TIME)
     {
-      LED_STRIP_SetColor(0, NO_OF_LEDS, RED);
+      LED_STRIP_SetColor(0, NO_OF_LEDS, OFF);
+      LED_STRIP_Update();
       puzzle_state = SENSORS_WAIT_FOR_BALL;
-      hole_index = false;
-      clear_current_array();
-      display_current_array();
     }
   break;
 
@@ -204,32 +162,36 @@ void loop()
   }
 }
 
-void display_current_array(void)
+void led_strip_update(uint8_t stage)
 {
-  Serial.print("Current array: ");
-  for(uint8_t i = 0; i < ARRAY_SIZE; i++)
-  {
-    Serial.print(hole_game_current[i]);
-  }
-  Serial.println("");
-}
-
-void clear_current_array(void)
-{
-  Serial.print("Clear array: ");
-  for(uint8_t i = 0; i < ARRAY_SIZE; i++)
-  {
-    hole_game_current[i] = NONE;
-    Serial.print(hole_game_current[i]);
-  }
-  Serial.println("");
-}
-
-void led_strip_short_blink(void)
-{
-  digitalWrite(LED_BUILTIN, LOW);
   LED_STRIP_SetColor(0, NO_OF_LEDS, OFF);
-  delay(500);
-  digitalWrite(LED_BUILTIN, HIGH);
-  LED_STRIP_SetColor(0, NO_OF_LEDS, RED);
+  LED_STRIP_Update();
+
+  if(stage ==  0)
+  {
+    LED_STRIP_SetColor(0, 2, RED);
+    Serial.println("Stage: 1");
+  }
+  else if(stage == 1)
+  {
+    LED_STRIP_SetColor(0, 2, RED);
+    LED_STRIP_SetColor(3, 5, BLUE);
+    Serial.println("Stage: 2");
+  }
+  else if(stage == 2)
+  {
+    LED_STRIP_SetColor(0, 2, RED);
+    LED_STRIP_SetColor(3, 5, BLUE);
+    LED_STRIP_SetColor(6, 8, YELLOW);
+    Serial.println("Stage: 3");
+  }
+  else if(stage == 3)
+  {
+    LED_STRIP_SetColor(0, 2, RED);
+    LED_STRIP_SetColor(3, 5, BLUE);
+    LED_STRIP_SetColor(6, 8, YELLOW);
+    LED_STRIP_SetColor(9, 11, GREEN);
+    Serial.println("Stage: 4");
+  }
+  LED_STRIP_Update();
 }
