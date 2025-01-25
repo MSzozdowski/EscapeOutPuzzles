@@ -5,9 +5,14 @@
 
 void setup()
 {
-  EscOutCandles_Init();
   DOORS_Init();
-  DOORS_Open();
+  digitalWrite(RELAY_PIN, HIGH);
+  delay(200);
+  digitalWrite(RELAY_PIN, LOW);
+  EscOutCandles_Init();
+  
+  //DOORS_Open();
+  
 }
 
 void loop()

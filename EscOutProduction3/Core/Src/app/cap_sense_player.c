@@ -58,13 +58,14 @@ void CAP_SENSE_PLAYER_Process(void)
 			if(cap_sense_touched && DOOR_IsOpen() == false)
 			{
 				cap_sense_touched = false;
-				cap_sense_player_state = CAP_SENSE_PLAYER_STAGE_1;
+				cap_sense_player_state = CAP_SENSE_PLAYER_TOUCHED;
+				DFPLAYER_Play(0x02);
 				last_touch_tick = HAL_GetTick();
 				stage_tick = HAL_GetTick();
 			}
 			break;
 
-		case CAP_SENSE_PLAYER_STAGE_1:
+		case CAP_SENSE_PLAYER_TOUCHED:
 			if(cap_sense_touched)
 			{
 				cap_sense_touched = false;
@@ -77,27 +78,7 @@ void CAP_SENSE_PLAYER_Process(void)
 				cap_sense_player_state = CAP_SENSE_PLAYER_INIT;
 			}
 
-			if(HAL_GetTick() - stage_tick > STAGE_1_DURATION)
-			{
-				DFPLAYER_Play(0x02);
-				cap_sense_player_state = CAP_SENSE_PLAYER_STAGE_2;
-			}
-			break;
-
-		case CAP_SENSE_PLAYER_STAGE_2:
-			if(cap_sense_touched)
-			{
-				cap_sense_touched = false;
-				last_touch_tick = HAL_GetTick();
-			}
-
-			if(HAL_GetTick() - last_touch_tick > MAX_TOUCH_INTERVAL)
-			{
-				DFPLAYER_Stop();
-				cap_sense_player_state = CAP_SENSE_PLAYER_INIT;
-			}
-
-			if(HAL_GetTick() - stage_tick > STAGE_2_DURATION)
+			if(HAL_GetTick() - stage_tick > TOUCH_DURATION)
 			{
 				DFPLAYER_Stop();
 				cap_sense_player_state = CAP_SENSE_PLAYER_OPEN_DOOR;

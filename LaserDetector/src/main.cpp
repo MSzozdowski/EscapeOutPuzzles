@@ -4,26 +4,22 @@
 #include "doors.h"
 
 #define DISPLAY_SENS_DATA 500
-#define LED_SOLVE_BLINK_TIMES 8
+#define LED_SOLVE_BLINK_TIMES 7
 #define LED_BLINK_TIME 250
-#define DELAY_BEETWEEN_STATES 200
+#define DELAY_BEETWEEN_STATES 500
+
 typedef enum
 {
-  WAIT_FOR_SENS1,
-  DELAY1,
-  WAIT_FOR_SENS2,
-  DELAY2,
-  WAIT_FOR_SENS3,
-  DELAY3,
-  WAIT_FOR_SENS4,
-  DELAY4,
-  WAIT_FOR_SENS5,
-  DELAY5,
-  WAIT_FOR_SENS6,
+  WAIT_FOR_SENS,
+  DELAY_FOR_NEXT,
   SOLVED_LED_BLINK,
   DOOR_OPEN,
   WAIT_FOR_NEXT_GAME
 } stages_e;
+
+void displayCurrentArray(void);
+void clearCurrentArray(void);
+uint8_t checkIsGoingToSolve(uint8_t arr_id);
 
 void setup()
 {
@@ -34,167 +30,154 @@ void setup()
 }
 
 unsigned long tick = millis();
-uint8_t sensor_value = 255;
-stages_e game_stage = WAIT_FOR_SENS1;
 
+uint8_t sensor_value1 = 255;
+uint8_t sensor_value2 = 255;
+uint8_t sensor_value3 = 255;
+uint8_t sensor_value4 = 255;
+uint8_t sensor_value5 = 255;
+uint8_t sensor_value6 = 255;
+
+stages_e game_stage = WAIT_FOR_SENS;
+
+uint8_t solution_array[7] = {1, 2, 3, 4, 5, 2, 6};
+uint8_t current_array[7] = {0, 0, 0, 0, 0, 0, 0};
+
+uint8_t array_index = 0;
+uint8_t sens_detected_flag = 0;
+uint8_t temp_sens_value = 0;
+uint8_t last_sens_detected = 0;
 void loop()
 {
   DOORS_Process();
 
   switch (game_stage)
   {
-  case WAIT_FOR_SENS1:
-    sensor_value = SENSOR_ReturnSensValue(SENSOR1);
-    if (sensor_value < SENSOR_THRESHOLD_VALUE)
+  case WAIT_FOR_SENS:
+    sensor_value1 = SENSOR_ReturnSensValue(SENSOR1);
+    sensor_value2 = SENSOR_ReturnSensValue(SENSOR2);
+    sensor_value3 = SENSOR_ReturnSensValue(SENSOR3);
+    sensor_value4 = SENSOR_ReturnSensValue(SENSOR4);
+    sensor_value5 = SENSOR_ReturnSensValue(SENSOR5);
+    sensor_value6 = SENSOR_ReturnSensValue(SENSOR6);
+
+    if (sensor_value1 < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor1 detected!: ");
-      Serial.println(sensor_value);
-      game_stage = DELAY1;
-      sensor_value = 255;
-      LEDS_LedOn(LED1);
+      Serial.println(sensor_value1);
+      game_stage = DELAY_FOR_NEXT;
+      LEDS_LedsAllOn();
+      sens_detected_flag = 1;
+      current_array[array_index] = 1;
+      last_sens_detected = 1;
     }
-
-    if (millis() - tick > DISPLAY_SENS_DATA)
-    {
-      Serial.print("Sensor1 value:");
-      Serial.println(sensor_value);
-      tick = millis();
-    }
-
-    break;
-
-  case DELAY1:
-    if (millis() - tick > DELAY_BEETWEEN_STATES)
-    {
-      game_stage = WAIT_FOR_SENS2;
-      tick = millis();
-    }
-    break;
-
-  case WAIT_FOR_SENS2:
-    sensor_value = SENSOR_ReturnSensValue(SENSOR2);
-    if (sensor_value < SENSOR_THRESHOLD_VALUE)
+    else if (sensor_value2 < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor2 detected!: ");
-      Serial.println(sensor_value);
-      game_stage = DELAY2;
-      sensor_value = 255;
-      LEDS_LedOn(LED2);
+      Serial.println(sensor_value2);
+      game_stage = DELAY_FOR_NEXT;
+      LEDS_LedsAllOn();
+      sens_detected_flag = 1;
+      current_array[array_index] = 2;
+      last_sens_detected = 2;
     }
-
-    if (millis() - tick > DISPLAY_SENS_DATA)
-    {
-      Serial.print("Sensor2 value:");
-      Serial.println(sensor_value);
-      tick = millis();
-    }
-    break;
-
-  case DELAY2:
-    if (millis() - tick > DELAY_BEETWEEN_STATES)
-    {
-      game_stage = WAIT_FOR_SENS3;
-      tick = millis();
-    }
-    break;
-
-  case WAIT_FOR_SENS3:
-    sensor_value = SENSOR_ReturnSensValue(SENSOR3);
-    if (sensor_value < SENSOR_THRESHOLD_VALUE)
+    else if (sensor_value3 < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor3 detected!: ");
-      Serial.println(sensor_value);
-      game_stage = DELAY3;
-      sensor_value = 255;
-      LEDS_LedOn(LED3);
+      Serial.println(sensor_value3);
+      game_stage = DELAY_FOR_NEXT;
+      LEDS_LedsAllOn();
+      sens_detected_flag = 1;
+      current_array[array_index] = 3;
+      last_sens_detected = 3;
     }
-
-    if (millis() - tick > DISPLAY_SENS_DATA)
-    {
-      Serial.print("Sensor3 value:");
-      Serial.println(sensor_value);
-      tick = millis();
-    }
-    break;
-
-  case DELAY3:
-    if (millis() - tick > DELAY_BEETWEEN_STATES)
-    {
-      game_stage = WAIT_FOR_SENS4;
-      tick = millis();
-    }
-    break;
-
-  case WAIT_FOR_SENS4:
-    sensor_value = SENSOR_ReturnSensValue(SENSOR4);
-    if (sensor_value < SENSOR_THRESHOLD_VALUE)
+    else if (sensor_value4 < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor4 detected!: ");
-      Serial.println(sensor_value);
-      game_stage = DELAY4;
-      sensor_value = 255;
-      LEDS_LedOn(LED4);
+      Serial.println(sensor_value4);
+      game_stage = DELAY_FOR_NEXT;
+      LEDS_LedsAllOn();
+      sens_detected_flag = 1;
+      current_array[array_index] = 4;
+      last_sens_detected = 4;
     }
-
-    if (millis() - tick > DISPLAY_SENS_DATA)
-    {
-      Serial.print("Sensor4 value:");
-      Serial.println(sensor_value);
-      tick = millis();
-    }
-    break;
-
-  case DELAY4:
-    if (millis() - tick > DELAY_BEETWEEN_STATES)
-    {
-      game_stage = WAIT_FOR_SENS5;
-      tick = millis();
-    }
-    break;
-
-  case WAIT_FOR_SENS5:
-    sensor_value = SENSOR_ReturnSensValue(SENSOR5);
-    if (sensor_value < SENSOR_THRESHOLD_VALUE)
+    else if (sensor_value5 < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor5 detected!: ");
-      Serial.println(sensor_value);
-      game_stage = DELAY5;
-      sensor_value = 255;
-      LEDS_LedOn(LED5);
+      Serial.println(sensor_value5);
+      game_stage = DELAY_FOR_NEXT;
+      LEDS_LedsAllOn();
+      sens_detected_flag = 1;
+      current_array[array_index] = 5;
+      last_sens_detected = 5;
     }
-
-    if (millis() - tick > DISPLAY_SENS_DATA)
-    {
-      Serial.print("Sensor5 value:");
-      Serial.println(sensor_value);
-      tick = millis();
-    }
-    break;
-
-  case DELAY5:
-    if (millis() - tick > DELAY_BEETWEEN_STATES)
-    {
-       game_stage = WAIT_FOR_SENS6;
-      tick = millis();
-    }
-    break;
-
-  case WAIT_FOR_SENS6:
-    sensor_value = SENSOR_ReturnSensValue(SENSOR6);
-    if (sensor_value < SENSOR_THRESHOLD_VALUE)
+    else if (sensor_value6 < SENSOR_THRESHOLD_VALUE)
     {
       Serial.print("Sensor6 detected!: ");
-      Serial.println(sensor_value);
-      game_stage = SOLVED_LED_BLINK;
-      sensor_value = 255;
-      LEDS_LedOn(LED6);
+      Serial.println(sensor_value6);
+      game_stage = DELAY_FOR_NEXT;
+      LEDS_LedsAllOn();
+      sens_detected_flag = 1;
+      current_array[array_index] = 6;
+      last_sens_detected = 6;
     }
 
-    if (millis() - tick > DISPLAY_SENS_DATA)
+    if (sens_detected_flag)
     {
-      Serial.print("Sensor6 value:");
-      Serial.println(sensor_value);
       tick = millis();
+      array_index++;
+      sens_detected_flag = 0;
+      displayCurrentArray();
+    }
+
+    break;
+
+  case DELAY_FOR_NEXT:
+    if (last_sens_detected == 1)
+    {
+      temp_sens_value = SENSOR_ReturnSensValue(SENSOR1);
+    }
+    else if (last_sens_detected == 2)
+    {
+      temp_sens_value = SENSOR_ReturnSensValue(SENSOR2);
+    }
+    else if (last_sens_detected == 3)
+    {
+      temp_sens_value = SENSOR_ReturnSensValue(SENSOR3);
+    }
+    else if (last_sens_detected == 4)
+    {
+      temp_sens_value = SENSOR_ReturnSensValue(SENSOR4);
+    }
+    else if (last_sens_detected == 5)
+    {
+      temp_sens_value = SENSOR_ReturnSensValue(SENSOR5);
+    }
+    else if (last_sens_detected == 6)
+    {
+      temp_sens_value = SENSOR_ReturnSensValue(SENSOR6);
+    }
+
+    if (millis() - tick > DELAY_BEETWEEN_STATES && temp_sens_value >= SENSOR_THRESHOLD_VALUE)
+    {
+      LEDS_LedsAllOff();
+      game_stage = WAIT_FOR_SENS;
+      tick = millis();
+      
+      if(checkIsGoingToSolve(array_index) == 0)
+      {
+        array_index = 0;
+        clearCurrentArray();
+      }
+      else if(array_index == 7)
+      {
+        array_index = 0;
+        clearCurrentArray();
+        game_stage =  SOLVED_LED_BLINK;
+      }
+      Serial.print("Array id:");
+      Serial.println(array_index);
+      delay(1000);
     }
     break;
 
@@ -225,11 +208,44 @@ void loop()
     if (DOORS_DoorsReady())
     {
       LEDS_LedsToggleAll();
-      game_stage = WAIT_FOR_SENS1;
+      game_stage = WAIT_FOR_SENS;
       Serial.println("New game started");
     }
     break;
   default:
     break;
   }
+}
+
+void displayCurrentArray(void)
+{
+  Serial.print("Current array: ");
+  for (uint8_t i = 0; i < 7; i++)
+  {
+    Serial.print(current_array[i]);
+    Serial.print(", ");
+  }
+  Serial.println("");
+}
+
+void clearCurrentArray(void)
+{
+  for (uint8_t i = 0; i < 7; i++)
+  {
+    current_array[i] = 0;
+  }
+}
+
+uint8_t checkIsGoingToSolve(uint8_t arr_id)
+{
+  for(uint8_t i = 0; i < arr_id; i++)
+  {
+    if(current_array[i] != solution_array[i])
+    {
+      Serial.print("Wrong position: ");
+      Serial.println(i);
+      return 0;
+    }
+  }
+  return 1;
 }

@@ -48,7 +48,7 @@ static void REED_SW_COLORS_InitStage(void)
 		case INIT_STAGE_1:
 			WS2812_SetFragmentColor(SEGMENT_START(reed_sw1_yellow.reed_sw_id), SEGMENT_END(reed_sw1_yellow.reed_sw_id), RED);
 			WS2812_SetFragmentColor(SEGMENT_START(reed_sw2_blue.reed_sw_id), SEGMENT_END(reed_sw2_blue.reed_sw_id), WHITE);
-			WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), BRONZE);
+			WS2812_SetFragmentColor(SEGMENT_START(reed_sw3_green.reed_sw_id), SEGMENT_END(reed_sw3_green.reed_sw_id), CYAN);
 			WS2812_SetFragmentColor(SEGMENT_START(reed_sw4_red.reed_sw_id), SEGMENT_END(reed_sw4_red.reed_sw_id), BLUE);
 			WS2812_Update();
 			tick = HAL_GetTick();
@@ -158,8 +158,8 @@ static void ReedSwCallback(reed_sw* reed_sw)
 				else if(prev_colors_array[0] == PINK)
 					color = BLUE;
 				else if(prev_colors_array[0] == BLUE)
-					color = BRONZE;
-				else if(prev_colors_array[0] == BRONZE)
+					color = CYAN;
+				else if(prev_colors_array[0] == CYAN)
 					color = YELLOW;
 				else if(prev_colors_array[0] == YELLOW)
 					color = PURPLE;
@@ -181,8 +181,8 @@ static void ReedSwCallback(reed_sw* reed_sw)
 				else if(prev_colors_array[1] == PINK)
 					color = BLUE;
 				else if(prev_colors_array[1] == BLUE)
-					color = BRONZE;
-				else if(prev_colors_array[1] == BRONZE)
+					color = CYAN;
+				else if(prev_colors_array[1] == CYAN)
 					color = YELLOW;
 				else if(prev_colors_array[1] == YELLOW)
 					color = PURPLE;
@@ -203,8 +203,8 @@ static void ReedSwCallback(reed_sw* reed_sw)
 				else if(prev_colors_array[2] == PINK)
 					color = BLUE;
 				else if(prev_colors_array[2] == BLUE)
-					color = BRONZE;
-				else if(prev_colors_array[2] == BRONZE)
+					color = CYAN;
+				else if(prev_colors_array[2] == CYAN)
 					color = YELLOW;
 				else if(prev_colors_array[2] == YELLOW)
 					color = PURPLE;
@@ -226,8 +226,8 @@ static void ReedSwCallback(reed_sw* reed_sw)
 				else if(prev_colors_array[3] == PINK)
 					color = BLUE;
 				else if(prev_colors_array[3] == BLUE)
-					color = BRONZE;
-				else if(prev_colors_array[3] == BRONZE)
+					color = CYAN;
+				else if(prev_colors_array[3] == CYAN)
 					color = YELLOW;
 				else if(prev_colors_array[3] == YELLOW)
 					color = PURPLE;

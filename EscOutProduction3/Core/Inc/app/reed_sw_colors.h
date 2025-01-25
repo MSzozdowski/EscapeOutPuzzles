@@ -20,13 +20,13 @@
 
 #define COLORS_NUMBER 4
 
-#define RED 	0xFF2F00
+#define RED 	0xFF1F00
 #define GREEN 	0x00FF00
 #define BLUE 	0x0000FF
 #define YELLOW 	0xFFD700
 #define WHITE	0xFFFFFF
 #define PINK 	0xF769AC
-#define BRONZE	0x6C3C0C
+#define CYAN	0x00FFFF//0x6C3C0C
 #define PURPLE 	0x52057B
 
 typedef enum

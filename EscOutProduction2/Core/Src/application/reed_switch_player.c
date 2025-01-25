@@ -77,53 +77,76 @@ void REED_SW_PLAYER_Process(void)
 	}
 }
 
+static uint8_t number = 0;
 static void ReedSwCallback(reed_sw* reed_sw)
 {
-	static uint8_t number = 1;
-
 	if(reed_sw == &reed_sw1)
 	{
 		DFPLAYER_Play(reed_sw->reed_sw_id);
-		number = 1;
+		number = 0;
 	}
 	else if(reed_sw == &reed_sw2)
 	{
 		DFPLAYER_Play(reed_sw->reed_sw_id);
+		if(number == 2)
+		{
+			puzzle_solved_flag = true;
+		}
+		number = 0;
 	}
 	else if(reed_sw == &reed_sw3)
 	{
 		DFPLAYER_Play(reed_sw->reed_sw_id);
+		if(number == 0)
+		{
+			number = 1;
+		}
+		else
+		{
+			number = 0;
+		}
+
 	}
 	else if(reed_sw == &reed_sw4)
 	{
 		DFPLAYER_Play(reed_sw->reed_sw_id);
+		number = 0;
 	}
 	else if(reed_sw == &reed_sw5)
 	{
 		DFPLAYER_Play(reed_sw->reed_sw_id);
+		if(number == 1)
+		{
+			number = 2;
+		}
+		else
+		{
+			number =  0;
+		}
+
 	}
 
-	switch(number){
-		case 1:
-			(reed_sw->reed_sw_id == 1) ? number++ : (number = 1);
-			break;
-		case 2:
-			(reed_sw->reed_sw_id == 2) ? number++ : (number = 1);
-			break;
-		case 3:
-			(reed_sw->reed_sw_id == 3) ? number++ : (number = 1);
-			break;
-		case 4:
-			(reed_sw->reed_sw_id == 4) ? number++ : (number = 1);
-			break;
-		case 5:
-			if(reed_sw->reed_sw_id == 5)
-			{
-				if(puzzle_solved_flag == false)
-					puzzle_solved_flag = true;
-			}
-			number = 1;
-			break;
-	}
+//	switch(number){
+//		case 1:
+//			(reed_sw->reed_sw_id == 1) ? number++ : (number = 1);
+//			break;
+//		case 2:
+//			(reed_sw->reed_sw_id == 2) ? number++ : (number = 1);
+//			break;
+//		case 3:
+//			(reed_sw->reed_sw_id == 3) ? number++ : (number = 1);
+//			break;
+//		case 4:
+//			(reed_sw->reed_sw_id == 4) ? number++ : (number = 1);
+//			break;
+//		case 5:
+//			if(reed_sw->reed_sw_id == 5)
+//			{
+//				if(puzzle_solved_flag == false)
+//					puzzle_solved_flag = true;
+//			}
+//			number = 1;
+//			break;
+//	}
 	HAL_GPIO_TogglePin(DBG_LED_GPIO_Port, DBG_LED_Pin);
 }

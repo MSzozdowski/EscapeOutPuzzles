@@ -10,9 +10,9 @@
 #define SENS_3 9
 #define BUZZER 8
 
-#define SENS_1_SOLUTION 7
-#define SENS_2_SOLUTION 6
-#define SENS_3_SOLUTION 5
+#define SENS_1_SOLUTION 3
+#define SENS_2_SOLUTION 5
+#define SENS_3_SOLUTION 4
 
 MetalSensor Sensor1(SENS_1);
 MetalSensor Sensor2(SENS_2);
@@ -72,7 +72,7 @@ void loop()
   {
     if (sens_array[0] == SENS_1_SOLUTION && sens_array[1] == SENS_2_SOLUTION && sens_array[2] == SENS_3_SOLUTION)
     {
-      DOORS_Open();
+      //DOORS_Open();
       Serial.print("Good! ");
       Serial.print("S1:");
       Serial.print(sens_array[0]);

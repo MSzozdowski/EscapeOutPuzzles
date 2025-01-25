@@ -17,5 +17,6 @@ void LEDS_LedOn(uint8_t led_no);
 void LEDS_LedOff(uint8_t led_no);
 void LEDS_LedToggle(uint8_t led_no);
 void LEDS_LedsToggleAll(void);
-
+void LEDS_LedsAllOn(void);
+void LEDS_LedsAllOff(void);
 #endif

@@ -9,10 +9,12 @@
 #define RED 0xFF0000
 #define GREEN 0x00FF00
 #define BLUE 0x0000FF
+#define YELLOW 0xFFFF00
 
 #define OFF 0x000000
 
 void LED_STRIP_Init(void);
 void LED_STRIP_SetColor(uint8_t start_id, uint8_t end_id, uint32_t color);
+void LED_STRIP_Update(void);
 
 #endif
