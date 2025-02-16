@@ -37,14 +37,16 @@ void setup()
   Sensor3.begin();
   Button.begin();
   Serial.begin(9600);
-  DOORS_Init();
+  //DOORS_Init();
+  pinMode(RELAY_PIN, OUTPUT);
+  delay(1500);
 }
 
 uint8_t init_state = 1;
 
 void loop()
 {
-  DOORS_Process();
+  //DOORS_Process();
 
   if (Sensor1.pressed())
   {
@@ -83,9 +85,9 @@ void loop()
 
       PlayWinMelody();
 
-      // digitalWrite(3, HIGH);
-      // delay(1000);
-      // digitalWrite(3, LOW);
+      digitalWrite(RELAY_PIN, HIGH);
+      delay(2500);
+      digitalWrite(RELAY_PIN, LOW);
     }
     else
     {

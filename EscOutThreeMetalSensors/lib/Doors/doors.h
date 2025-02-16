@@ -1,7 +1,7 @@
 #ifndef doors_h
 #define doors_h
 
-#define DOOR_OPEN_TIME 1000
+#define DOOR_OPEN_TIME 1500
 #define DOOR_NEXT_TRY_TIME 2000
 
 #define RELAY_PIN 2
