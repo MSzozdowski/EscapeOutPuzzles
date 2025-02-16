@@ -78,75 +78,58 @@ void REED_SW_PLAYER_Process(void)
 }
 
 static uint8_t number = 0;
+static uint32_t reed_sw_tick = 0;
 static void ReedSwCallback(reed_sw* reed_sw)
 {
-	if(reed_sw == &reed_sw1)
+	//1 - H
+	//2 - P
+	//3 - U
+	//4 - J
+	//5 - B
+	//Solution U-B-P -> 3-5-2
+	if(reed_switch_player_state == REED_SWITCH_PLAYER_WAIT && HAL_GetTick() - reed_sw_tick > NEXT_TOUCH_TIME)
 	{
-		DFPLAYER_Play(reed_sw->reed_sw_id);
-		number = 0;
-	}
-	else if(reed_sw == &reed_sw2)
-	{
-		DFPLAYER_Play(reed_sw->reed_sw_id);
-		if(number == 2)
+		reed_sw_tick = HAL_GetTick();
+		if(reed_sw == &reed_sw1) //1-H
 		{
-			puzzle_solved_flag = true;
-		}
-		number = 0;
-	}
-	else if(reed_sw == &reed_sw3)
-	{
-		DFPLAYER_Play(reed_sw->reed_sw_id);
-		if(number == 0)
-		{
-			number = 1;
-		}
-		else
-		{
+			DFPLAYER_Play(reed_sw->reed_sw_id);
 			number = 0;
 		}
-
-	}
-	else if(reed_sw == &reed_sw4)
-	{
-		DFPLAYER_Play(reed_sw->reed_sw_id);
-		number = 0;
-	}
-	else if(reed_sw == &reed_sw5)
-	{
-		DFPLAYER_Play(reed_sw->reed_sw_id);
-		if(number == 1)
+		else if(reed_sw == &reed_sw2) //2-P
 		{
-			number = 2;
+			DFPLAYER_Play(reed_sw->reed_sw_id);
+			if(number == 2) //3rd good touch
+			{
+				puzzle_solved_flag = true;
+				number = 0;
+			}
+			else
+			{
+				number = 0;
+			}
 		}
-		else
+		else if(reed_sw == &reed_sw3) //3-U
 		{
-			number =  0;
+			DFPLAYER_Play(reed_sw->reed_sw_id);
+			number = 1; //1st good touch
 		}
-
+		else if(reed_sw == &reed_sw4) //4-J
+		{
+			DFPLAYER_Play(reed_sw->reed_sw_id);
+			number = 0;
+		}
+		else if(reed_sw == &reed_sw5)  //5-B
+		{
+			DFPLAYER_Play(reed_sw->reed_sw_id);
+			if(number == 1) //2nd good touch
+			{
+				number = 2;
+			}
+			else
+			{
+				number =  0;
+			}
+		}
 	}
-
-//	switch(number){
-//		case 1:
-//			(reed_sw->reed_sw_id == 1) ? number++ : (number = 1);
-//			break;
-//		case 2:
-//			(reed_sw->reed_sw_id == 2) ? number++ : (number = 1);
-//			break;
-//		case 3:
-//			(reed_sw->reed_sw_id == 3) ? number++ : (number = 1);
-//			break;
-//		case 4:
-//			(reed_sw->reed_sw_id == 4) ? number++ : (number = 1);
-//			break;
-//		case 5:
-//			if(reed_sw->reed_sw_id == 5)
-//			{
-//				if(puzzle_solved_flag == false)
-//					puzzle_solved_flag = true;
-//			}
-//			number = 1;
-//			break;
-//	}
 	HAL_GPIO_TogglePin(DBG_LED_GPIO_Port, DBG_LED_Pin);
 }

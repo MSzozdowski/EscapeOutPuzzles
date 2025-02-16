@@ -10,6 +10,7 @@
 
 #define LAST_MUSIC_DELAY 500
 #define DOOR_OPEN_DELAY 1000
+#define NEXT_TOUCH_TIME 750
 
 typedef enum
 {
