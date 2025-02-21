@@ -59,7 +59,7 @@ void TOY_PULLING_Process(void)
 				DOOR_Open(&door_puzzle);
 				toy_pulling_state = TOY_PULLING_WAIT;
 				tick = HAL_GetTick();
-				RELAY_BUZZER_Start(&relay_buzz, 250, 250, 20);
+				RELAY_BUZZER_Start(&relay_buzz, 250, 250, 10);
 			}
 
 			break;
