@@ -61,7 +61,6 @@ void TOY_PULLING_Process(void)
 				tick = HAL_GetTick();
 				RELAY_BUZZER_Start(&relay_buzz, 250, 250, 10);
 			}
-
 			break;
 
 		case TOY_PULLING_WAIT:
@@ -76,5 +75,9 @@ void TOY_PULLING_Process(void)
 
 static void SensDetected(distance_sens_t* distance_sens)
 {
-	distance_sens_detected_flag = true;
+	if(toy_pulling_state == TOY_PULLING_IDLE)
+	{
+		distance_sens_detected_flag = true;
+		HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
+	}
 }
