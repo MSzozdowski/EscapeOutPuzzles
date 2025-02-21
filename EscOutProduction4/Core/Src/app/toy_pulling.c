@@ -11,29 +11,26 @@
 #include "app/door.h"
 #include "app/distance_sens.h"
 #include "app/reset.h"
+#include "app/buzzer.h"
+#include "app/relay_buzzer.h"
 
 static void SensDetected(distance_sens_t* distance_sens);
-//static void SensReleased(distance_sens_t* distance_sens);
 
 static toy_pulling_state_t toy_pulling_state = TOY_PULLING_IDLE;
-
-//static door_t toy;
 static door_t door_puzzle;
-
+static relay_buzzer_t relay_buzz;
 static distance_sens_t distance_sens;
-
 static volatile bool distance_sens_detected_flag = false;
-//static volatile bool distance_sens_released_flag = false;
 
 void TOY_PULLING_Init(void)
 {
 	BUTTON_LED_Init();
 
 	DOOR_Init(&door_puzzle, RELAY1_GPIO_Port, RELAY1_Pin);
+	RELAY_BUZZER_Init(&relay_buzz, RELAY2_GPIO_Port, RELAY2_Pin);
 
 	DISTANCE_SENS_Init(&distance_sens, DISTANCE_SENS_GPIO_Port, DISTANCE_SENS_Pin, 1);
 	DistanceSensDetectedCallback(SensDetected);
-	//DistanceSensReleasedCallback(SensReleased);
 	if(reset_cause_get() == RESET_CAUSE_EXTERNAL_RESET_PIN_RESET)
 	{
 		DOOR_Open(&door_puzzle);
@@ -44,13 +41,13 @@ void TOY_PULLING_Process(void)
 {
 	DOOR_Process(&door_puzzle);
 	DISTANCE_SENS_Process(&distance_sens);
+	RELAY_BUZZER_Process(&relay_buzz);
 
 	static uint32_t tick;
 	switch (toy_pulling_state) {
 		case TOY_PULLING_IDLE:
 			if(distance_sens_detected_flag == true)
 			{
-				//distance_sens_released_flag = false;
 				tick = HAL_GetTick();
 				toy_pulling_state = TOY_PULLING_SENS_DETECTED;
 			}
@@ -62,7 +59,9 @@ void TOY_PULLING_Process(void)
 				DOOR_Open(&door_puzzle);
 				toy_pulling_state = TOY_PULLING_WAIT;
 				tick = HAL_GetTick();
+				RELAY_BUZZER_Start(&relay_buzz, 250, 250, 10);
 			}
+
 			break;
 
 		case TOY_PULLING_WAIT:
@@ -79,8 +78,3 @@ static void SensDetected(distance_sens_t* distance_sens)
 {
 	distance_sens_detected_flag = true;
 }
-
-//static void SensReleased(distance_sens_t* distance_sens)
-//{
-//	distance_sens_released_flag = true;
-//}

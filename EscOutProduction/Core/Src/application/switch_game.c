@@ -181,7 +181,6 @@ void AddToCounter(void)
 
 void ResetCounter(void)
 {
-
 	HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
 	if(switch_game_state == SWITCH_GAME_PROCESS)
 	{
