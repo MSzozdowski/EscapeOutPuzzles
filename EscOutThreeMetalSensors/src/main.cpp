@@ -2,6 +2,7 @@
 #include "MetalSensor.h"
 #include "doors.h"
 #include "pitches.h"
+#include <avr/wdt.h>
 
 #define LED 13
 #define BUTTON 12
@@ -27,6 +28,7 @@ void PlayGoodMelody(void);
 void PlayWinMelody(void);
 void PlayBadMelody(void);
 void ClearSensArray(void);
+void reboot();
 
 void setup()
 {
@@ -39,7 +41,9 @@ void setup()
   Serial.begin(9600);
   //DOORS_Init();
   pinMode(RELAY_PIN, OUTPUT);
-  delay(1500);
+  delay(250);
+  digitalWrite(RELAY_PIN, LOW);
+  Serial.println("Puzzle init");
 }
 
 uint8_t init_state = 1;
@@ -85,9 +89,11 @@ void loop()
 
       PlayWinMelody();
 
+      Serial.println("Door relay high");
       digitalWrite(RELAY_PIN, HIGH);
       delay(2500);
-      digitalWrite(RELAY_PIN, LOW);
+      Serial.println("Reboot");
+      reboot();
     }
     else
     {
@@ -131,4 +137,10 @@ void ClearSensArray(void)
 {
   for (uint8_t i = 0; i < 3; i++)
     sens_array[i] = 0;
+}
+
+void reboot() {
+  wdt_disable();
+  wdt_enable(WDTO_250MS);
+  while (1) {}
 }
