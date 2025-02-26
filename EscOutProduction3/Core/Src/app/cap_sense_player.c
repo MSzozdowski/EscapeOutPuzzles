@@ -12,26 +12,30 @@
 #include "app/dfplayer.h"
 #include "app/door.h"
 #include "stdbool.h"
+#include "app/relay_buzzer.h"
 
 static void SensorCallback(void);
-static void LightOn(void);
 
 static cap_sense_player_state_t cap_sense_player_state = CAP_SENSE_PLAYER_INIT;
 
 static volatile bool cap_sense_touched = false;
 
+relay_buzzer_t transistor_buzzer;
 
 void CAP_SENSE_PLAYER_Init(void)
 {
 	CAP_SENSOR_Init();
 	CAP_SENSOR_DetectedCallback(SensorCallback);
 	DFPLAYER_Init(&huart2);
-	LightOn();
+
+	RELAY_BUZZER_Init(&transistor_buzzer, LIGHT_GPIO_Port, LIGHT_Pin); //previously it was used to LED strip to highlight an eyes, now it's used for buzzer
+	RELAY_BUZZER_Start(&transistor_buzzer, 250, 250, 14);
 }
 
 void CAP_SENSE_PLAYER_Process(void)
 {
 	CAP_SENSOR_Process();
+	RELAY_BUZZER_Process(&transistor_buzzer);
 
 	static uint32_t stage_tick = 0;
 	static uint32_t last_touch_tick = 0;
@@ -90,6 +94,7 @@ void CAP_SENSE_PLAYER_Process(void)
 			if(HAL_GetTick() - stage_tick > DOOR_OPEN_DELAY)
 			{
 				DOOR_Open();
+				RELAY_BUZZER_Start(&transistor_buzzer, 250, 250, 14);
 				cap_sense_player_state = CAP_SENS_WAIT_NEXT_GAME;
 				stage_tick = HAL_GetTick();
 			}
@@ -109,9 +114,4 @@ static void SensorCallback(void)
 {
 	cap_sense_touched = true;
 	HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
-}
-
-static void LightOn(void)
-{
-	HAL_GPIO_WritePin(LIGHT_GPIO_Port, LIGHT_Pin, GPIO_PIN_SET);
 }
