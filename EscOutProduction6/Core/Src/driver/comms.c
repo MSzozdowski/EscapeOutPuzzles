@@ -11,6 +11,7 @@
 #include "driver/door.h"
 #include "app/display_eye.h"
 #include "string.h"
+#include "driver/cap_sensor.h"
 
 static void COMMS_RS485_TransmitCommand(uint8_t* command);
 static inline void COMMS_RS485_TransmitEnable(void);
