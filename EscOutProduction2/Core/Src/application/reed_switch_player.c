@@ -87,13 +87,16 @@ static void ReedSwCallback(reed_sw* reed_sw)
 	//4 - J
 	//5 - B
 	//Solution U-B-P -> 3-5-2
+	//New solution H-B-P -> 1-5-2
+
 	if(reed_switch_player_state == REED_SWITCH_PLAYER_WAIT && HAL_GetTick() - reed_sw_tick > NEXT_TOUCH_TIME)
 	{
 		reed_sw_tick = HAL_GetTick();
 		if(reed_sw == &reed_sw1) //1-H
 		{
 			DFPLAYER_Play(reed_sw->reed_sw_id);
-			number = 0;
+			number = 1; //1st good touch
+//			number = 0;
 		}
 		else if(reed_sw == &reed_sw2) //2-P
 		{
@@ -111,7 +114,8 @@ static void ReedSwCallback(reed_sw* reed_sw)
 		else if(reed_sw == &reed_sw3) //3-U
 		{
 			DFPLAYER_Play(reed_sw->reed_sw_id);
-			number = 1; //1st good touch
+			number = 0;
+//			number = 1; //1st good touch
 		}
 		else if(reed_sw == &reed_sw4) //4-J
 		{

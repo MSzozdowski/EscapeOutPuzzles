@@ -57,6 +57,24 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define DEBUG_LED_Pin GPIO_PIN_0
+#define DEBUG_LED_GPIO_Port GPIOA
+#define ADC_SENS_Pin GPIO_PIN_1
+#define ADC_SENS_GPIO_Port GPIOB
+#define LOCK_STATE_Pin GPIO_PIN_2
+#define LOCK_STATE_GPIO_Port GPIOB
+#define DFR_BUSY_Pin GPIO_PIN_10
+#define DFR_BUSY_GPIO_Port GPIOA
+#define DFR_VCC_EN_Pin GPIO_PIN_15
+#define DFR_VCC_EN_GPIO_Port GPIOA
+#define RELAY_Pin GPIO_PIN_5
+#define RELAY_GPIO_Port GPIOB
+#define DFR_TX_Pin GPIO_PIN_6
+#define DFR_TX_GPIO_Port GPIOB
+#define DFR_RX_Pin GPIO_PIN_7
+#define DFR_RX_GPIO_Port GPIOB
+#define DFR_BUSYB8_Pin GPIO_PIN_8
+#define DFR_BUSYB8_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
