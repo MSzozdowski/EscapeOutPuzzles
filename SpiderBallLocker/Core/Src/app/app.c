@@ -20,4 +20,5 @@ void APP_Init(void)
 void APP_Loop(void)
 {
 	DOOR_Process(&door);
+	LOCK_INPUT_Process(&lock_input);
 }
