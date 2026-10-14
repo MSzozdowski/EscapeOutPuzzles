@@ -1,0 +1,7 @@
+../Core/Src/app/door.c:15:6:DOOR_Init	1
+../Core/Src/app/door.c:23:6:DOOR_Process	8
+../Core/Src/app/door.c:54:6:DOOR_Open	1
+../Core/Src/app/door.c:59:6:DOOR_OpenPernament	1
+../Core/Src/app/door.c:64:6:DOOR_ClosePernament	1
+../Core/Src/app/door.c:69:13:RELAY_On	1
+../Core/Src/app/door.c:74:13:RELAY_Off	1

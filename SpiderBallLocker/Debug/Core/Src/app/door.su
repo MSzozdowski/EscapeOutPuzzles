@@ -1,0 +1,7 @@
+../Core/Src/app/door.c:15:6:DOOR_Init	24	static
+../Core/Src/app/door.c:23:6:DOOR_Process	16	static
+../Core/Src/app/door.c:54:6:DOOR_Open	16	static
+../Core/Src/app/door.c:59:6:DOOR_OpenPernament	16	static
+../Core/Src/app/door.c:64:6:DOOR_ClosePernament	16	static
+../Core/Src/app/door.c:69:13:RELAY_On	16	static
+../Core/Src/app/door.c:74:13:RELAY_Off	16	static
