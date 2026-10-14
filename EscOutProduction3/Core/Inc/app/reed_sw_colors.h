@@ -9,8 +9,9 @@
 #define INC_APP_REED_SW_COLORS_H_
 
 #define INIT_NEXT_COLOR_DELAY 500
-#define DOOR_OPEN_DELAY_1 1000
+#define DOOR_OPEN_DELAY_1 100
 #define NEXT_GAME_DELAY 5000
+#define SOLVED_CONFIRM_DELAY 2000
 
 #define NUMBER_OF_REED_SW 4
 #define SEGMENT_SIZE (WS2812_LED_NUMBER/NUMBER_OF_REED_SW)
@@ -20,14 +21,12 @@
 
 #define COLORS_NUMBER 4
 
-#define RED 	0xFF1F00
-#define GREEN 	0x00FF00
-#define BLUE 	0x0000FF
-#define YELLOW 	0xFFD700
-#define WHITE	0xFFFFFF
-#define PINK 	0xF769AC
-#define CYAN	0x00FFFF//0x6C3C0C
-#define PURPLE 	0x52057B
+#define RED     0x801800
+#define GREEN   0x008000
+#define BLUE    0x000080
+#define YELLOW  0x808000
+#define BLACK   0x000000
+#define PINK    0x800080
 
 typedef enum
 {
