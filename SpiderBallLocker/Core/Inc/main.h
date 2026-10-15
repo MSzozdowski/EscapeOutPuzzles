@@ -57,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BUZZER_BUILD_IN_Pin GPIO_PIN_9
+#define BUZZER_BUILD_IN_GPIO_Port GPIOB
 #define DEBUG_LED_Pin GPIO_PIN_1
 #define DEBUG_LED_GPIO_Port GPIOB
 #define RELAY_Pin GPIO_PIN_9

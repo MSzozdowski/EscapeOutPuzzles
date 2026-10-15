@@ -34,5 +34,6 @@ typedef struct
 void LOCK_INPUT_Init(lock_input_t* lock_input, GPIO_TypeDef *GpioPort, uint16_t GpioPin);
 void LOCK_INPUT_Process(lock_input_t* lock_input);
 lock_input_state_t LOCK_INPUT_GetState(lock_input_t* lock_input);
+bool LOCK_INPUT_WasUnlocked(lock_input_t* lock_input);
 
 #endif /* INC_APP_LOCK_INPUT_H_ */

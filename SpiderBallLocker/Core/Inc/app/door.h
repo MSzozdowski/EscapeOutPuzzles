@@ -8,12 +8,13 @@
 #ifndef INC_DOOR_H_
 #define INC_DOOR_H_
 
-#define DOOR_OPEN_TIME 1000
+#define DOOR_OPEN_TIME 1500
 #define NEXT_DOOR_OPEN_TIME 750
 
 #include "stdbool.h"
 
-typedef enum {
+typedef enum
+{
 	DOOR_IDLE,
 	OPEN,
 	WAIT_FOR_NEXT_OPEN,

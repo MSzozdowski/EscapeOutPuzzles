@@ -18,6 +18,7 @@ void DOOR_Init(door_t* door, GPIO_TypeDef *GpioPort, uint16_t GpioPin)
 	door->GpioPort = GpioPort;
 	door->GpioPin = GpioPin;
 	door->request_to_open = false;
+	RELAY_Off(door);
 }
 
 void DOOR_Process(door_t* door)
@@ -29,6 +30,7 @@ void DOOR_Process(door_t* door)
 				RELAY_On(door);
 				door->door_state = OPEN;
 				door->last_tick = HAL_GetTick();
+				door->request_to_open = false;
 			}
 			break;
 
@@ -44,7 +46,6 @@ void DOOR_Process(door_t* door)
 		case WAIT_FOR_NEXT_OPEN:
 			if(HAL_GetTick() - door->last_tick > NEXT_DOOR_OPEN_TIME)
 			{
-				door->request_to_open = false;
 				door->door_state = DOOR_IDLE;
 			}
 		break;
@@ -53,25 +54,43 @@ void DOOR_Process(door_t* door)
 
 void DOOR_Open(door_t* door)
 {
-	door->request_to_open = true;
+	if(door == NULL)
+		return;
+
+    if (door->door_state == DOOR_IDLE)
+    {
+        door->request_to_open = true;
+    }
 }
 
 void DOOR_OpenPernament(door_t* door)
 {
+	if(door == NULL)
+		return;
+
 	RELAY_On(door);
 }
 
 void DOOR_ClosePernament(door_t* door)
 {
+	if(door == NULL)
+		return;
+
 	RELAY_Off(door);
 }
 
 static void RELAY_On(door_t* door)
 {
+	if(door == NULL)
+		return;
+
 	HAL_GPIO_WritePin(door->GpioPort, door->GpioPin, GPIO_PIN_SET);
 }
 
 static void RELAY_Off(door_t* door)
 {
+	if(door == NULL)
+		return;
+
 	HAL_GPIO_WritePin(door->GpioPort, door->GpioPin, GPIO_PIN_RESET);
 }
